@@ -44,7 +44,7 @@ La aplicación permite a los estudiantes registrados publicar, buscar y solicita
 ## 2. Descripción General del Sistema
 
 ### 2.1 Perspectiva del Producto
-EcoComponents FIE es una plataforma tipo foro con frontend estático (HTML/CSS/JS Vanilla) y backend provisto por **Supabase** (PostgreSQL + API REST + Auth). El navegador se comunica directamente con Supabase mediante llamadas `fetch()` autenticadas con JWT. Los datos persisten en una base de datos PostgreSQL real alojada en la nube de Supabase.
+Renova es una plataforma tipo foro con frontend estático (HTML/CSS/JS Vanilla) y backend provisto por **Supabase** (PostgreSQL + API REST + Auth). El navegador se comunica directamente con Supabase mediante llamadas `fetch()` autenticadas con JWT. Los datos persisten en una base de datos PostgreSQL real alojada en la nube de Supabase.
 
 ### 2.2 Arquitectura del Sistema
 
@@ -62,7 +62,7 @@ Navegador (HTML + CSS + JS Vanilla)
 ### 2.3 Funciones Principales del Sistema
 
 ```
-EcoComponents FIE
+Renova
 ├── Autenticación real (Supabase Auth)
 ├── Foro de publicaciones
 │   ├── Visualización de ofertas (lectura desde BD)
