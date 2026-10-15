@@ -49,22 +49,26 @@ ecocomponents-fie/
 Crear el esqueleto del proyecto con la estructura de archivos, el archivo `data.json` con datos precargados suficientes para que todas las demás vistas funcionen, y los estilos CSS globales con paleta de colores ecológica.
 
 **Expected Outcomes:**
-- Estructura de carpetas y archivos HTML vacíos creados.
-- `data.json` con al menos 3 usuarios, 10 publicaciones (mezcla de donación, préstamo e intercambio) y metadatos base para estadísticas.
-- `styles.css` con variables CSS, reset, tipografía, paleta verde/ecológica y componentes base (botones, cards, navbar).
+- Estructura de carpetas y archivos HTML vacíos creados, incluyendo `assets/images/` con imágenes placeholder.
+- `data.json` con al menos 3 usuarios, 10 publicaciones (mezcla de donación, préstamo e intercambio). Sin objeto `estadisticas` — las métricas se calculan dinámicamente en `stats.js` a partir del array de publicaciones.
+- `styles.css` con variables CSS, reset, tipografía, paleta verde/ecológica y componentes base (botones, cards, navbar). Otros componentes (modal, formularios, badges, barras de gráfico) serán agregados por cada subtarea que los necesite.
 
 **Todo List:**
-1. Crear la estructura de carpetas del proyecto.
-2. Crear `data/data.json` con el esquema de usuarios, publicaciones y estadísticas base.
-3. Crear `css/styles.css` con variables de color, tipografía y componentes base reutilizables.
-4. Crear los 5 archivos HTML con estructura base (head, navbar placeholder, footer).
-5. Crear `js/data.js` que carga el JSON y expone los datos como módulo global.
+1. Crear la estructura de carpetas del proyecto (`css/`, `js/`, `data/`, `assets/images/`).
+2. Agregar imágenes placeholder en `assets/images/` (mínimo una por categoría de componente electromecánico) que serán referenciadas por las publicaciones en el JSON.
+3. Crear `data/data.json` con el esquema de usuarios y publicaciones. Las publicaciones usarán rutas relativas a `assets/images/` en el campo `imagen`.
+4. Crear `css/styles.css` con variables de color, tipografía y los componentes base: botones, cards y navbar.
+5. Crear los 5 archivos HTML con estructura base (head con link a `styles.css`, navbar placeholder, main vacío, footer).
+6. Crear `js/data.js` que carga el JSON vía `fetch` y expone `window.ecoData = { usuarios: [...], publicaciones: [...] }` como objeto global raw.
 
 **Relevant Context:**
 - Esquema de usuarios: `{ id, nombre, usuario, password, semestre, carrera, contacto }`
 - Esquema de publicaciones: `{ id, titulo, descripcion, tipo, imagen, estado, semestre_origen, usuario_id, fecha }`
 - Tipos de publicación: `"donacion"`, `"prestamo"`, `"intercambio"`
 - Estados del componente: `"nuevo"`, `"buen estado"`, `"desgaste leve"`, `"para repuesto"`
+- `window.ecoData` expone solo datos raw — cada módulo (auth.js, forum.js, stats.js) realiza sus propias búsquedas/filtros directamente sobre los arrays.
+- Las estadísticas se calculan al vuelo en `stats.js` desde `window.ecoData.publicaciones`; no se necesita un objeto `estadisticas` en el JSON.
+- `js/nav.js` **no se crea en ST-1** — es responsabilidad de ST-2 (Landing Page), donde se construye la navbar por primera vez.
 
 ---
 
@@ -79,19 +83,22 @@ Crear la página de entrada de la aplicación. Es la primera impresión del proy
 - Hero section con nombre, slogan y botón "Comenzar" que lleva a `login.html`.
 - Sección de "Cómo funciona" con los 3 tipos de publicación (íconos + descripción breve).
 - Sección de llamado a la acción con acceso al foro.
-- Navbar con enlaces a todas las vistas.
+- Navbar funcional con logo, nombre de la app y links de navegación (incluyendo manejo de sesión).
 - Footer con información de la facultad.
+- `js/nav.js` creado y funcional.
 
 **Todo List:**
-1. Construir la navbar con logo, nombre de la app y links de navegación.
-2. Construir el hero section (imagen de fondo, titular, slogan, CTA).
-3. Construir la sección "¿Cómo funciona?" con cards de los 3 tipos.
-4. Construir el footer.
-5. Vincular `css/styles.css` y asegurar responsividad básica.
+1. Crear `js/nav.js` con la lógica de lectura de `eco_user` desde `sessionStorage` para mostrar/ocultar botón de logout en la navbar.
+2. Construir la navbar en `index.html` con logo, nombre de la app, links de navegación y vinculación a `nav.js`.
+3. Construir el hero section (imagen de fondo, titular, slogan, CTA).
+4. Construir la sección "¿Cómo funciona?" con cards de los 3 tipos.
+5. Construir el footer.
+6. Vincular `css/styles.css` y asegurar responsividad básica.
 
 **Relevant Context:**
 - El botón "Comenzar" debe redirigir a `login.html`.
-- Si ya hay sesión simulada (localStorage con `eco_user`), el CTA puede llevar directo al foro.
+- Si ya hay sesión simulada (`sessionStorage` con `eco_user`), el CTA puede llevar directo al foro.
+- `js/nav.js` es creado aquí (no en ST-1) y será reutilizado por todas las páginas siguientes.
 
 ---
 
