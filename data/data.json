@@ -1,0 +1,143 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nombre": "Juan Pérez",
+      "usuario": "jperez",
+      "password": "fiepas123",
+      "semestre": "6to",
+      "carrera": "Ingeniería Electromecánica",
+      "contacto": "juan.perez@fie.edu"
+    },
+    {
+      "id": 2,
+      "nombre": "María López",
+      "usuario": "mlopez",
+      "password": "fiepas123",
+      "semestre": "4to",
+      "carrera": "Ingeniería Electromecánica",
+      "contacto": "maria.lopez@fie.edu"
+    },
+    {
+      "id": 3,
+      "nombre": "Carlos Sánchez",
+      "usuario": "csanchez",
+      "password": "fiepas123",
+      "semestre": "8vo",
+      "carrera": "Ingeniería Electromecánica",
+      "contacto": "carlos.sanchez@fie.edu"
+    }
+  ],
+  "publicaciones": [
+    {
+      "id": 1,
+      "titulo": "Motor DC 12V en buen estado",
+      "descripcion": "Motor de corriente directa de 12V usado en proyecto de banda transportadora. Funciona perfectamente, incluye cables de conexión.",
+      "tipo": "donacion",
+      "imagen": "assets/images/motor.svg",
+      "estado": "buen estado",
+      "semestre_origen": "5to",
+      "usuario_id": 1,
+      "fecha": "2024-03-10"
+    },
+    {
+      "id": 2,
+      "titulo": "Sensor de temperatura PT100",
+      "descripcion": "Sensor RTD PT100 de 3 hilos, rango -200 a 850°C. Utilizado en proyecto de control térmico. Calibrado y verificado.",
+      "tipo": "prestamo",
+      "imagen": "assets/images/sensor.svg",
+      "estado": "nuevo",
+      "semestre_origen": "7mo",
+      "usuario_id": 3,
+      "fecha": "2024-03-12"
+    },
+    {
+      "id": 3,
+      "titulo": "PLC Siemens S7-200 para intercambio",
+      "descripcion": "PLC Siemens S7-200 con módulo CPU 224. Interesado en intercambio por Arduino Mega o Raspberry Pi. Tiene cable de programación.",
+      "tipo": "intercambio",
+      "imagen": "assets/images/plc.svg",
+      "estado": "buen estado",
+      "semestre_origen": "8vo",
+      "usuario_id": 3,
+      "fecha": "2024-03-14"
+    },
+    {
+      "id": 4,
+      "titulo": "Servomotor Futaba S3003",
+      "descripcion": "Servomotor estándar Futaba S3003, torque 3.2 kg/cm. Usado en proyecto de brazo robótico, en perfectas condiciones.",
+      "tipo": "donacion",
+      "imagen": "assets/images/servo.svg",
+      "estado": "buen estado",
+      "semestre_origen": "6to",
+      "usuario_id": 1,
+      "fecha": "2024-03-15"
+    },
+    {
+      "id": 5,
+      "titulo": "Transformador 220V/12V 2A",
+      "descripcion": "Transformador de núcleo de hierro, entrada 220V AC, salida 12V AC a 2A. Proyecto terminado, ya no se necesita.",
+      "tipo": "donacion",
+      "imagen": "assets/images/transformador.svg",
+      "estado": "buen estado",
+      "semestre_origen": "4to",
+      "usuario_id": 2,
+      "fecha": "2024-03-16"
+    },
+    {
+      "id": 6,
+      "titulo": "Sensor ultrasónico HC-SR04",
+      "descripcion": "Sensor de distancia ultrasónico HC-SR04, rango 2cm a 400cm. Disponible para préstamo por un semestre académico.",
+      "tipo": "prestamo",
+      "imagen": "assets/images/sensor.svg",
+      "estado": "nuevo",
+      "semestre_origen": "4to",
+      "usuario_id": 2,
+      "fecha": "2024-03-18"
+    },
+    {
+      "id": 7,
+      "titulo": "Motor paso a paso NEMA 17",
+      "descripcion": "Stepper motor NEMA 17, 1.8° por paso, 2A. Utilizado en impresora 3D de proyecto de tesis. Con driver A4988 incluido.",
+      "tipo": "intercambio",
+      "imagen": "assets/images/motor.svg",
+      "estado": "desgaste leve",
+      "semestre_origen": "8vo",
+      "usuario_id": 3,
+      "fecha": "2024-03-19"
+    },
+    {
+      "id": 8,
+      "titulo": "PLC Micrologix 1100 para repuesto",
+      "descripcion": "PLC Allen Bradley Micrologix 1100 con falla en puerto de comunicación. Ideal para repuesto o práctica de mantenimiento.",
+      "tipo": "donacion",
+      "imagen": "assets/images/plc.svg",
+      "estado": "para repuesto",
+      "semestre_origen": "7mo",
+      "usuario_id": 3,
+      "fecha": "2024-03-20"
+    },
+    {
+      "id": 9,
+      "titulo": "Servomotor MG996R de alta potencia",
+      "descripcion": "Servomotor MG996R de metal, torque 9.4 kg/cm. Disponible para préstamo en proyectos que requieran mayor fuerza.",
+      "tipo": "prestamo",
+      "imagen": "assets/images/servo.svg",
+      "estado": "buen estado",
+      "semestre_origen": "6to",
+      "usuario_id": 1,
+      "fecha": "2024-03-21"
+    },
+    {
+      "id": 10,
+      "titulo": "Transformador toroidal 500VA",
+      "descripcion": "Transformador toroidal 500VA, salidas 24V y 12V AC. Proyecto de fuente de poder finalizado. Busco intercambio por variador de frecuencia pequeño.",
+      "tipo": "intercambio",
+      "imagen": "assets/images/transformador.svg",
+      "estado": "nuevo",
+      "semestre_origen": "5to",
+      "usuario_id": 2,
+      "fecha": "2024-03-22"
+    }
+  ]
+}
