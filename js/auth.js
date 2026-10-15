@@ -1,63 +1,71 @@
-/**
- * auth.js — Autenticación contra data/data.json
- * Almacena el usuario autenticado en sessionStorage como "eco_user".
- */
+/* =========================================================
+   js/auth.js — Autenticación contra tabla perfiles en Supabase
+   Expone: login(usuario, password), logout(), getUsuarioActivo()
+   Requiere: js/config.js y js/supabase.js cargados antes.
+   ========================================================= */
 
-const DATA_URL = '../../data/data.json';
-const SESSION_KEY = 'eco_user';
+// ---------------------------------------------------------
+// getUsuarioActivo — devuelve el objeto de sesión o null
+// ---------------------------------------------------------
+function getUsuarioActivo() {
+  var raw = sessionStorage.getItem('eco_user');
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch (e) { return null; }
+}
 
-/**
- * Intenta autenticar al usuario.
- * @param {string} usuario
- * @param {string} password
- * @returns {Promise<{ok: boolean, mensaje?: string}>}
- */
+// ---------------------------------------------------------
+// login — busca usuario+password en tabla perfiles
+// Devuelve Promise<{ ok: true, usuario: {...} }>
+//                  o Promise<{ ok: false, mensaje: string }>
+// ---------------------------------------------------------
 async function login(usuario, password) {
   try {
-    const res = await fetch(DATA_URL);
-    if (!res.ok) throw new Error('No se pudo cargar el archivo de datos.');
-    const data = await res.json();
+    var url = window.SUPABASE_URL + '/rest/v1/perfiles'
+      + '?usuario=eq.' + encodeURIComponent(usuario)
+      + '&password=eq.' + encodeURIComponent(password)
+      + '&select=*'
+      + '&limit=1';
 
-    const encontrado = data.usuarios.find(
-      (u) => u.usuario === usuario.trim() && u.password === password
-    );
+    var res = await fetch(url, {
+      headers: {
+        'apikey': window.SUPABASE_KEY,
+        'Authorization': 'Bearer ' + window.SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      }
+    });
 
-    if (!encontrado) {
+    if (!res.ok) {
+      return { ok: false, mensaje: 'Error al conectar con el servidor.' };
+    }
+
+    var datos = await res.json();
+
+    if (!datos || datos.length === 0) {
       return { ok: false, mensaje: 'Usuario o contraseña incorrectos.' };
     }
 
-    // Guardar sin la contraseña
-    const { password: _pw, ...usuarioSeguro } = encontrado;
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(usuarioSeguro));
-    return { ok: true };
+    // Guardar sesión en sessionStorage (compatible con index.html)
+    var usuarioSesion = {
+      id:       datos[0].id,
+      nombre:   datos[0].nombre,
+      usuario:  datos[0].usuario,
+      semestre: datos[0].semestre,
+      carrera:  datos[0].carrera,
+      contacto: datos[0].contacto
+    };
+    sessionStorage.setItem('eco_user', JSON.stringify(usuarioSesion));
+
+    return { ok: true, usuario: usuarioSesion };
+
   } catch (err) {
-    return { ok: false, mensaje: 'Error al conectar con los datos: ' + err.message };
+    return { ok: false, mensaje: 'Error de conexión. Intenta de nuevo.' };
   }
 }
 
-/**
- * Cierra la sesión: limpia sessionStorage y redirige a index.html.
- */
+// ---------------------------------------------------------
+// logout — limpia sesión y redirige al inicio
+// ---------------------------------------------------------
 function logout() {
-  sessionStorage.removeItem(SESSION_KEY);
-  window.location.href = 'login.html';
-}
-
-/**
- * Devuelve el usuario de la sesión activa, o null si no hay sesión.
- * @returns {object|null}
- */
-function getUsuarioActivo() {
-  const raw = sessionStorage.getItem(SESSION_KEY);
-  return raw ? JSON.parse(raw) : null;
-}
-
-/**
- * Redirige a login.html si no hay sesión activa.
- * Llamar al inicio de páginas protegidas.
- */
-function requireAuth() {
-  if (!getUsuarioActivo()) {
-    window.location.href = 'login.html';
-  }
+  sessionStorage.removeItem('eco_user');
+  window.location.href = 'index.html';
 }

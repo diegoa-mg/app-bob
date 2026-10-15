@@ -152,8 +152,9 @@
     </p>
   </div>
 
-  <!-- auth.js debe cargarse antes de nav.js -->
-  <script src="../js/auth.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
   <script>
     // Si ya hay sesión activa, ir directo al foro
     if (getUsuarioActivo()) {
