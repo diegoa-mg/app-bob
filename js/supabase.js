@@ -84,4 +84,10 @@
     insertPublicacion: insertPublicacion
   };
 
+  // ---------------------------------------------------------
+  // Cliente SDK de Supabase (para Auth)
+  // Requiere que el CDN @supabase/supabase-js esté cargado antes.
+  // ---------------------------------------------------------
+  window.supabaseClient = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+
 })();

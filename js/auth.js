@@ -1,44 +1,42 @@
 /**
- * auth.js — Autenticación contra data/data.json
+ * auth.js — Autenticación con Supabase Auth
+ * Requiere que js/supabase.js (y el CDN de Supabase) estén cargados antes.
  * Almacena el usuario autenticado en sessionStorage como "eco_user".
  */
 
-const DATA_URL = '../../data/data.json';
 const SESSION_KEY = 'eco_user';
 
 /**
- * Intenta autenticar al usuario.
- * @param {string} usuario
+ * Intenta autenticar al usuario con Supabase Auth.
+ * @param {string} email
  * @param {string} password
  * @returns {Promise<{ok: boolean, mensaje?: string}>}
  */
-async function login(usuario, password) {
+async function login(email, password) {
   try {
-    const res = await fetch(DATA_URL);
-    if (!res.ok) throw new Error('No se pudo cargar el archivo de datos.');
-    const data = await res.json();
+    const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
 
-    const encontrado = data.usuarios.find(
-      (u) => u.usuario === usuario.trim() && u.password === password
-    );
-
-    if (!encontrado) {
-      return { ok: false, mensaje: 'Usuario o contraseña incorrectos.' };
+    if (error) {
+      return { ok: false, mensaje: error.message };
     }
 
-    // Guardar sin la contraseña
-    const { password: _pw, ...usuarioSeguro } = encontrado;
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(usuarioSeguro));
+    // Guardar datos básicos del usuario en sesión
+    const { id, email: userEmail } = data.user;
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ id, email: userEmail }));
     return { ok: true };
   } catch (err) {
-    return { ok: false, mensaje: 'Error al conectar con los datos: ' + err.message };
+    return { ok: false, mensaje: 'Error al conectar con Supabase: ' + err.message };
   }
 }
 
 /**
- * Cierra la sesión: limpia sessionStorage y redirige a index.html.
+ * Cierra la sesión: limpia sessionStorage y redirige a login.html.
  */
-function logout() {
+async function logout() {
+  await window.supabaseClient.auth.signOut();
   sessionStorage.removeItem(SESSION_KEY);
   window.location.href = 'login.html';
 }

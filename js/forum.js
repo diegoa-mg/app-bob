@@ -2,9 +2,7 @@
  * forum.js — Lógica del foro de publicaciones.
  *
  * Dependencias (cargadas antes en el HTML):
- *   config.js → supabase.js → data.js → auth.js → nav.js → forum.js
- *
- * Asume que auth.js expone getSession() → Promise<{ user: { id, email } } | null>
+ *   auth-demo.js → data-demo.js → nav.js → forum.js
  */
 
 (function () {
@@ -19,16 +17,16 @@
   };
 
   // ── Referencias al DOM ────────────────────────────────────────────────────
-  var gridEl        = document.getElementById('grid-publicaciones');
-  var estadoEl      = document.getElementById('foro-estado');
-  var filtroTipo    = document.getElementById('filtro-tipo');
-  var filtroSem     = document.getElementById('filtro-semestre');
-  var btnAbrir      = document.getElementById('btn-abrir-modal');
-  var btnCancelar   = document.getElementById('btn-cancelar-modal');
-  var overlay       = document.getElementById('overlay-modal');
-  var formPub       = document.getElementById('form-publicacion');
-  var btnEnviar     = document.getElementById('btn-enviar-pub');
-  var modalError    = document.getElementById('modal-error');
+  var gridEl      = document.getElementById('grid-publicaciones');
+  var estadoEl    = document.getElementById('foro-estado');
+  var filtroTipo  = document.getElementById('filtro-tipo');
+  var filtroSem   = document.getElementById('filtro-semestre');
+  var btnAbrir    = document.getElementById('btn-abrir-modal');
+  var btnCancelar = document.getElementById('btn-cancelar-modal');
+  var overlay     = document.getElementById('overlay-modal');
+  var formPub     = document.getElementById('form-publicacion');
+  var btnEnviar   = document.getElementById('btn-enviar-pub');
+  var modalError  = document.getElementById('modal-error');
 
   // ── Utilidades ────────────────────────────────────────────────────────────
 
@@ -101,25 +99,25 @@
     });
   }
 
-  // ── Carga de publicaciones desde Supabase ─────────────────────────────────
+  // ── Carga de publicaciones desde ecoData (localStorage) ──────────────────
 
   function obtenerFiltros() {
-    return {
-      tipo:             filtroTipo.value  || null,
-      semestre_origen:  filtroSem.value   || null
-    };
+    var filtros = {};
+    if (filtroTipo.value)  filtros.tipo             = filtroTipo.value;
+    if (filtroSem.value)   filtros.semestre_origen  = filtroSem.value;
+    return filtros;
   }
 
-  function cargarPublicaciones(filtros) {
+  function cargarPublicaciones() {
     if (estadoEl) estadoEl.textContent = 'Cargando publicaciones…';
 
-    window.ecoSupabase.getPublicaciones(filtros)
+    window.ecoData.getPublicaciones(obtenerFiltros())
       .then(function (publicaciones) {
-        if (estadoEl) estadoEl.remove();
+        if (estadoEl) { estadoEl.remove(); estadoEl = null; }
         renderizarCards(publicaciones);
       })
       .catch(function (err) {
-        console.error('[forum.js] Error cargando publicaciones:', err.message);
+        console.error('[forum.js] Error cargando publicaciones:', err);
         gridEl.innerHTML = '<div class="foro-estado">Error al cargar las publicaciones. Intenta recargar la página.</div>';
       });
   }
@@ -131,21 +129,18 @@
     btnEnviar.textContent = 'Publicando…';
     ocultarModalError();
 
-    var sessionPromise = (typeof getSession === 'function')
-      ? getSession()
-      : Promise.resolve(null);
+    var usuario = getUsuarioActivo();
+    if (!usuario) {
+      mostrarModalError('No hay sesión activa. Inicia sesión nuevamente.');
+      btnEnviar.disabled = false;
+      btnEnviar.textContent = 'Publicar';
+      return;
+    }
 
-    sessionPromise
-      .then(function (session) {
-        if (!session || !session.user) {
-          throw new Error('No hay sesión activa. Inicia sesión nuevamente.');
-        }
-        datos.usuario_id = session.user.id;
-        return window.ecoSupabase.insertPublicacion(datos);
-      })
+    window.ecoData.insertPublicacion(datos, usuario)
       .then(function () {
         cerrarModal();
-        cargarPublicaciones(obtenerFiltros());
+        cargarPublicaciones();
       })
       .catch(function (err) {
         mostrarModalError(err.message || 'Error al publicar. Intenta de nuevo.');
@@ -171,7 +166,6 @@
   btnAbrir.addEventListener('click', abrirModal);
   btnCancelar.addEventListener('click', cerrarModal);
 
-  // Cerrar al hacer clic fuera del modal
   overlay.addEventListener('click', function (e) {
     if (e.target === overlay) cerrarModal();
   });
@@ -203,34 +197,20 @@
 
   // ── Filtros ───────────────────────────────────────────────────────────────
 
-  filtroTipo.addEventListener('change', function () {
-    cargarPublicaciones(obtenerFiltros());
-  });
-
-  filtroSem.addEventListener('change', function () {
-    cargarPublicaciones(obtenerFiltros());
-  });
+  filtroTipo.addEventListener('change', cargarPublicaciones);
+  filtroSem.addEventListener('change', cargarPublicaciones);
 
   // ── Guardia de autenticación + arranque ───────────────────────────────────
 
-  var sessionCheck = (typeof getSession === 'function')
-    ? getSession()
-    : Promise.resolve(null);
-
-  sessionCheck.then(function (session) {
-    if (!session || !session.user) {
-      window.location.href = 'login.html';
-      return;
-    }
-
-    // Saludo de bienvenida
+  var usuario = getUsuarioActivo();
+  if (!usuario) {
+    window.location.href = 'login.html';
+  } else {
     var bienvenidaEl = document.getElementById('foro-bienvenida');
     if (bienvenidaEl) {
-      bienvenidaEl.textContent = 'Bienvenido, ' + (session.user.email || 'usuario') + '.';
+      bienvenidaEl.textContent = 'Bienvenido, ' + (usuario.nombre || usuario.email) + '.';
     }
-
-    // Carga inicial
-    cargarPublicaciones(null);
-  });
+    cargarPublicaciones();
+  }
 
 })();

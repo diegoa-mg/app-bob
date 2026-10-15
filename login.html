@@ -107,6 +107,19 @@
 
     .pie a { color: #3b82d4; text-decoration: none; }
     .pie a:hover { text-decoration: underline; }
+
+    .demo-hint {
+      margin-top: 1.25rem;
+      padding: .65rem .85rem;
+      background: #f0f7ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      font-size: .82rem;
+      color: #1e40af;
+      text-align: center;
+    }
+
+    .demo-hint strong { font-weight: 700; }
   </style>
 </head>
 <body>
@@ -119,13 +132,13 @@
 
     <form id="form-login" novalidate>
       <div class="campo">
-        <label for="usuario">Usuario</label>
+        <label for="usuario">Correo electrónico</label>
         <input
-          type="text"
+          type="email"
           id="usuario"
-          name="usuario"
-          autocomplete="username"
-          placeholder="Tu nombre de usuario"
+          name="email"
+          autocomplete="email"
+          placeholder="tu@correo.com"
           required
         />
       </div>
@@ -147,13 +160,17 @@
       </button>
     </form>
 
+    <div class="demo-hint">
+      🔑 Credenciales de prueba:<br>
+      <strong>demo@fie.edu</strong> / <strong>demo1234</strong>
+    </div>
+
     <p class="pie">
-      <a href="../index.html">← Volver al inicio</a>
+      <a href="index.html">← Volver al inicio</a>
     </p>
   </div>
 
-  <!-- auth.js debe cargarse antes de nav.js -->
-  <script src="../js/auth.js"></script>
+  <script src="js/auth-demo.js"></script>
   <script>
     // Si ya hay sesión activa, ir directo al foro
     if (getUsuarioActivo()) {

@@ -30,7 +30,7 @@
       <div class="navbar-landing__actions">
         <!-- No session state -->
         <a href="login.html" class="navbar-landing__login" id="nav-login">Iniciar sesión</a>
-        <a href="login.html" class="btn-landing-cta" id="nav-register">Regístrate con tu matrícula</a>
+        <a href="login.html" class="btn-landing-cta" id="nav-register">Acceder al foro</a>
 
         <!-- Session active (hidden by default) -->
         <span class="navbar-landing__username hidden" id="nav-username"></span>
@@ -48,7 +48,7 @@
       <a href="#inicio">Inicio</a>
       <a href="#como-funciona">Cómo funciona</a>
       <a href="about.html">Nosotros</a>
-      <a href="login.html" class="mobile-cta" id="nav-mobile-cta">Regístrate con tu matrícula</a>
+      <a href="login.html" class="mobile-cta" id="nav-mobile-cta">Acceder al foro</a>
     </div>
   </nav>
 
@@ -400,10 +400,13 @@
           document.getElementById('nav-username').classList.remove('hidden');
           document.getElementById('nav-forum').classList.remove('hidden');
           document.getElementById('nav-logout').classList.remove('hidden');
-          // Redirect CTAs to forum
+          // Redirect CTAs and category pills to forum
           ['cta-explore','cta-publish','hero-search-btn','featured-see-all'].forEach(function(id) {
             var el = document.getElementById(id);
             if (el) el.href = 'forum.html';
+          });
+          document.querySelectorAll('.hero__cat-pill').forEach(function(pill) {
+            pill.href = 'forum.html';
           });
           document.getElementById('nav-mobile-cta').textContent = 'Ir al Foro';
           document.getElementById('nav-mobile-cta').href = 'forum.html';
