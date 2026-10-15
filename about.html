@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sobre Nosotros – Renova</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #1f2328;
+      background: #ffffff;
+    }
+
+    a { color: #3b82d4; }
+
+    /* ── Layout ── */
+    header, main, footer {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    header {
+      padding-top: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    header h1 { font-size: 1.75rem; }
+    header p  { margin-top: 0.4rem; color: #57606a; }
+
+    main { padding-top: 2.5rem; padding-bottom: 3rem; }
+
+    section { margin-bottom: 3rem; }
+
+    h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    p { margin-bottom: 0.9rem; }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── Team cards ── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .card {
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 1.25rem 1rem;
+      background: #f7f8fa;
+    }
+
+    .card h3 { font-size: 1rem; margin-bottom: 0.2rem; }
+    .card .role { font-size: 0.85rem; color: #57606a; margin-bottom: 0.6rem; }
+    .card p { font-size: 0.875rem; margin-bottom: 0; }
+
+    /* ── Nav ── */
+    nav {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 0.875rem;
+    }
+
+    nav a { margin-right: 1.25rem; text-decoration: none; color: #57606a; }
+    nav a:hover { color: #1f2328; }
+    nav a.active { color: #1f2328; font-weight: 600; }
+
+    footer {
+      padding-top: 1.5rem;
+      padding-bottom: 2rem;
+      border-top: 1px solid #e5e7eb;
+      font-size: 0.8rem;
+      color: #57606a;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="about.html" class="active">Sobre nosotros</a>
+  </nav>
+
+  <header>
+    <h1>Sobre Renova</h1>
+    <p>El origen, la misión y las personas detrás de la iniciativa de economía circular de la FIE.</p>
+  </header>
+
+  <main>
+
+    <!-- ── Misión y Visión ── -->
+    <section id="mision-vision">
+      <h2>Misión y Visión</h2>
+
+      <h3 style="margin-bottom: 0.5rem; margin-top: 1rem;">Misión</h3>
+      <p>
+        Renova es una plataforma estudiantil sin fines de lucro creada para facilitar la donación,
+        el préstamo y el intercambio de componentes electromecánicos entre los estudiantes de la
+        Facultad de Ingeniería Eléctrica (FIE). Nuestra misión es prolongar el ciclo de vida útil de
+        los materiales empleados en proyectos académicos, reduciendo la generación de residuos
+        electrónicos y fomentando una cultura de colaboración, responsabilidad ambiental y aprovechamiento
+        consciente de los recursos disponibles dentro de la comunidad universitaria.
+      </p>
+      <p>
+        Creemos que cada resistencia, motor, sensor o módulo que evita terminar en un cajón olvidado
+        o en la basura representa no solo un ahorro económico para el próximo estudiante, sino también
+        un pequeño pero significativo paso hacia la sostenibilidad tecnológica. A través de esta
+        plataforma queremos demostrar que la ingeniería y la responsabilidad ambiental no solo son
+        compatibles, sino que se potencian mutuamente.
+      </p>
+
+      <h3 style="margin-bottom: 0.5rem; margin-top: 1.5rem;">Visión</h3>
+      <p>
+        Aspiramos a convertirnos en el modelo de referencia de economía circular estudiantil dentro
+        de las facultades de ingeniería del país. En el mediano plazo, buscamos expandir la red de
+        componentes disponibles más allá de la FIE, integrando a otras facultades afines y, eventualmente,
+        a institutos técnicos de la región, creando un ecosistema universitario donde los materiales
+        fluyan libremente entre quienes los necesitan y quienes ya los han utilizado.
+      </p>
+      <p>
+        Visualizamos un entorno académico donde ningún componente en buen estado quede obsoleto por
+        falta de un canal de redistribución, donde los estudiantes de primer año puedan acceder a
+        materiales que de otra manera estarían fuera de su alcance económico, y donde los egresados
+        dejen un legado tangible al donar los componentes de sus proyectos finales a las generaciones
+        que continúan su camino.
+      </p>
+    </section>
+
+    <!-- ── Contexto institucional ── -->
+    <section id="contexto">
+      <h2>Por qué la FIE adoptó esta iniciativa</h2>
+      <p>
+        La Facultad de Ingeniería electromecánica lleva más de cuatro décadas formando ingenieros. 
+        A lo largo de ese tiempo, miles de proyectos de aula, trabajos de integración curricular y tesis
+        de grado han dado lugar a una enorme cantidad de componentes electromecánicos que, una vez evaluados,
+        quedan sin un destino claro. Sensores de temperatura, drivers de motores, placas de desarrollo,
+        actuadores, fuentes de alimentación y cientos de componentes pasivos se acumulan en laboratorios,
+        armarios y domicilios de estudiantes sin posibilidad de ser reutilizados de forma organizada.
+      </p>
+      <p>
+        En 2023, un estudio interno de la unidad de gestión ambiental de la FIE estimó que
+        aproximadamente el 40 % de los componentes adquiridos para proyectos académicos son
+        desechados o almacenados indefinidamente al finalizar el semestre. Esta cifra, además de
+        representar un problema ambiental —los residuos electrónicos contienen materiales contaminantes
+        de difícil disposición final—, evidencia un desperdicio económico considerable para una
+        comunidad estudiantil en la que el presupuesto de muchos alumnos es limitado.
+      </p>
+      <p>
+        Ante este diagnóstico, la Dirección de la Facultad y la Asociación de Estudiantes impulsaron la
+        creación de un mecanismo digital sencillo y accesible que permitiera conectar a quienes
+        tienen componentes disponibles con quienes los necesitan. Renova nació así como
+        una respuesta concreta, desarrollada íntegramente por estudiantes, a un problema real
+        identificado dentro de la propia institución.
+      </p>
+      <p>
+        La iniciativa se enmarca además en los compromisos ambientales asumidos por la universidad
+        en su adhesión a la red de Universidades Sostenibles y en los Objetivos de Desarrollo
+        Sostenible (ODS) de la Agenda 2030, específicamente los ODS 12 (Producción y consumo
+        responsables) y ODS 17 (Alianzas para lograr los objetivos). Renova no es solo
+        una herramienta tecnológica: es la expresión práctica de valores que la FIE busca
+        inculcar en cada uno de sus graduados.
+      </p>
+    </section>
+
+    <!-- ── Equipo ── -->
+
+
+    <section id="equipo">
+      <h2>Nuestro equipo</h2>
+      <p>
+        Renova fue concebido y construido por un grupo interdisciplinario de estudiantes de
+        la FIE con interés en el desarrollo de software, la gestión ambiental y la innovación social.
+        Todos trabajan de forma voluntaria, motivados por el impacto que la plataforma puede tener
+        en su propia comunidad.
+      </p>
+
+      <div class="team-grid">
+
+
+        <div class="card">
+          <h3>Fernanda Zepeda</h3>
+          <p class="role">Líder de proyecto &amp; Analista de Datos</p>
+          <p>
+            Coordinó la arquitectura general de la plataforma y la lógica de la base de datos.
+            Apasionada por la intersección entre tecnología y sostenibilidad.
+          </p>
+        </div>
+
+        <div class="card">
+            <h3>Zinedine Miranda</h3>
+            <p class="role">Analista de Requerimientos</p>
+            <p>
+                Analizó la estructura y el funcionamiento de las interfaces para identificar
+                oportunidades de mejora en la usabilidad, el rendimiento y la organización de
+                los componentes visuales. 
+        </div>
+
+        <div class="card">
+          <h3>Fátima Contreras</h3>
+          <p class="role">Diseño UI/UX</p>
+          <p>
+            Diseñó las interfaces y definió los elementos visuales de la plataforma, priorizando
+            la usabilidad, la accesibilidad y una navegación intuitiva. Apasionado por combinar
+            creatividad y tecnología para crear experiencias digitales significativas.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Christofer Nieves</h3>
+          <p class="role">Desarrollo Frontend</p>
+          <p>
+            Responsable de implementar los componentes visuales de la plataforma, transformando
+            los diseños en interfaces funcionales y adaptables. Interesado en el diseño responsivo
+            y en ofrecer experiencias digitales atractivas.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Josefina Hernandez</h3>
+          <p class="role">Desarrollo Frontend</p>
+          <p>
+            Colaboró en la construcción de las interfaces y la integración de funcionalidades
+            interactivas para mejorar la navegación y la interacción con el usuario.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Francisco Espitia</h3>
+          <p class="role">Desarrollador Backend &amp; Seguridad</p>
+          <p>
+            Contribuyó al desarrollo e integración de los componentes de la plataforma, conectando
+            la interfaz de usuario con la lógica del servidor. Interesado en construir aplicaciones
+            funcionales que respondan a las necesidades de los usuarios.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Diego Morales</h3>
+          <p class="role">Desarrollador Backend &amp; Comunidad</p>
+          <p>
+            Participó en la implementación de funcionalidades y en la resolución de problemas
+            técnicos durante el desarrollo del proyecto. Motivado por la innovación y la creación
+            de herramientas digitales que generen un impacto positivo.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Vanessa Sibaja</h3>
+          <p class="role">Desarrollo Backend</p>
+          <p>
+            Colaboró en la integración de la base de datos y el desarrollo de consultas para garantizar
+            el almacenamiento y la recuperación eficiente de la información.
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>Jocelyn Reynalda</h3>
+          <p class="role">Desarrollador Backend &amp; QA Tester</p>
+          <p>
+            Encargado de verificar el funcionamiento de las funcionalidades de la plataforma mediante
+            pruebas y detección de errores, contribuyendo a garantizar la calidad, estabilidad y
+            confiabilidad del sistema.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>Renova &mdash; Facultad de Ingeniería Eléctrica &mdash; Iniciativa estudiantil de economía circular</p>
+    <p style="margin-top: 0.25rem;">Este sitio no recauda fondos monetarios. Todos los intercambios son entre estudiantes de la comunidad FIE.</p>
+  </footer>
+
+</body>
+</html>
