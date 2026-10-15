@@ -1,18 +1,18 @@
 # Especificación de Requerimientos de Software (SRS)
-## EcoComponents FIE — v1.0
+## Renova
 
-**Proyecto:** EcoComponents FIE  
-**Institución:** Facultad de Ingeniería Electromecánica (FIE)  
-**Tipo:** Aplicación web estática simulada  
-**Versión del documento:** 1.0  
-**Clasificación:** Uso interno — estudiantes FIE  
+**Proyecto:** Renova
+**Institución:** Facultad de Ingeniería Electromecánica (FIE)
+**Tipo:** Aplicación web con backend como servicio (BaaS)
+**Versión del documento:** 2.0
+**Clasificación:** Uso interno — estudiantes FIE
 
 ---
 
 ## 1. Introducción
 
 ### 1.1 Propósito
-Este documento describe los requerimientos funcionales y no funcionales de la aplicación web **EcoComponents FIE**, una plataforma de concientización ambiental que facilita la reutilización de componentes electromecánicos entre estudiantes de la Facultad de Ingeniería Electromecánica.
+Este documento describe los requerimientos funcionales y no funcionales de la aplicación web **Renova**, una plataforma de concientización ambiental que facilita la reutilización de componentes electromecánicos entre estudiantes de la Facultad de Ingeniería Electromecánica.
 
 ### 1.2 Alcance del Sistema
 La aplicación permite a los estudiantes registrados publicar, buscar y solicitar componentes o piezas de proyectos anteriores mediante tres modalidades: **donación**, **préstamo** e **intercambio**. El sistema es exclusivamente de uso interno para la comunidad estudiantil de la FIE.
@@ -26,14 +26,17 @@ La aplicación permite a los estudiantes registrados publicar, buscar y solicita
 | Donación | El estudiante cede el componente sin retribución |
 | Préstamo | El estudiante presta el componente de forma temporal |
 | Intercambio | El estudiante ofrece el componente a cambio de otro |
-| Sesión simulada | Autenticación ficticia gestionada con `sessionStorage` |
-| JSON | Archivo de datos estáticos que simula la base de datos |
+| Supabase | Plataforma BaaS (Backend as a Service) que provee PostgreSQL, API REST y Auth |
+| JWT | JSON Web Token; credencial cifrada que Supabase emite al autenticar un usuario |
+| RLS | Row Level Security; políticas de acceso a nivel de fila en PostgreSQL/Supabase |
+| BaaS | Backend as a Service; servicios de backend gestionados en la nube |
+| API REST | Interfaz de comunicación HTTP usada para leer y escribir datos en Supabase |
 
 ### 1.4 Restricciones del Proyecto
-- **Sin backend real:** toda la lógica reside en el navegador (HTML, CSS, JS Vanilla).
-- **Sin persistencia real:** las publicaciones nuevas existen solo mientras dure la sesión del navegador.
-- **Sin registro de usuarios:** los usuarios están predefinidos en el archivo `data.json`.
-- **Sin subida de archivos:** las imágenes se referencian por URL.
+- **Frontend estático:** la interfaz se construye con HTML, CSS y JavaScript Vanilla (sin frameworks).
+- **Backend gestionado:** la persistencia y autenticación son provistas por Supabase; no se desarrolla servidor propio.
+- **Sin registro público:** los administradores crean las cuentas de usuario directamente en el panel de Supabase Auth; no hay formulario de registro en la aplicación.
+- **Sin subida de archivos:** las imágenes de publicaciones se referencian por URL externa.
 - **Usuarios:** exclusivamente estudiantes de la FIE (no docentes, no administrativos).
 
 ---
@@ -41,31 +44,45 @@ La aplicación permite a los estudiantes registrados publicar, buscar y solicita
 ## 2. Descripción General del Sistema
 
 ### 2.1 Perspectiva del Producto
-EcoComponents FIE es una plataforma tipo foro que opera completamente en el navegador. Simula las funcionalidades de una red de intercambio de componentes mediante datos precargados y lógica JavaScript en el cliente.
+EcoComponents FIE es una plataforma tipo foro con frontend estático (HTML/CSS/JS Vanilla) y backend provisto por **Supabase** (PostgreSQL + API REST + Auth). El navegador se comunica directamente con Supabase mediante llamadas `fetch()` autenticadas con JWT. Los datos persisten en una base de datos PostgreSQL real alojada en la nube de Supabase.
 
-### 2.2 Funciones Principales del Sistema
+### 2.2 Arquitectura del Sistema
+
+```
+Navegador (HTML + CSS + JS Vanilla)
+        │
+        │  fetch() con anon key y JWT
+        ▼
+  Supabase Cloud
+  ├── Auth     → Autenticación email/password, emisión de JWT
+  ├── Database → PostgreSQL: tablas perfiles y publicaciones
+  └── API REST → Endpoints auto-generados, filtros por parámetros de query
+```
+
+### 2.3 Funciones Principales del Sistema
 
 ```
 EcoComponents FIE
-├── Autenticación simulada
+├── Autenticación real (Supabase Auth)
 ├── Foro de publicaciones
-│   ├── Visualización de ofertas
-│   ├── Filtrado por tipo y semestre
-│   ├── Publicación de nuevas ofertas
+│   ├── Visualización de ofertas (lectura desde BD)
+│   ├── Filtrado por tipo y semestre (query a Supabase)
+│   ├── Publicación de nuevas ofertas (escritura en BD)
 │   └── Contacto con el publicador
-├── Estadísticas de impacto ambiental
+├── Estadísticas de impacto ambiental (conteos reales desde BD)
 ├── Landing informativa
 └── Sección Sobre Nosotros
 ```
 
-### 2.3 Usuarios del Sistema
+### 2.4 Usuarios del Sistema
 **Perfil único:** Estudiante de la FIE autenticado.
 
 | Atributo | Descripción |
 |---|---|
 | Rol | Estudiante activo de la FIE |
-| Acceso | Usuario y contraseña predefinidos en `data.json` |
+| Acceso | Email y contraseña gestionados en Supabase Auth |
 | Capacidades | Ver, filtrar, publicar y contactar en el foro |
+| Sesión | JWT emitido por Supabase, persistido automáticamente en `localStorage` |
 
 ---
 
@@ -80,13 +97,13 @@ EcoComponents FIE
 
 | ID | Descripción | Prioridad |
 |---|---|---|
-| RF-A-01 | El sistema debe mostrar una página de login con campos de usuario y contraseña. | Alta |
-| RF-A-02 | El sistema debe validar las credenciales ingresadas comparándolas contra los usuarios definidos en `data.json`. | Alta |
-| RF-A-03 | Si las credenciales son incorrectas, el sistema debe mostrar un mensaje de error visible sin recargar la página. | Alta |
-| RF-A-04 | Si las credenciales son correctas, el sistema debe guardar los datos del usuario en `sessionStorage` y redirigir al foro. | Alta |
-| RF-A-05 | Si el usuario ya tiene una sesión activa y accede a `login.html`, debe ser redirigido automáticamente al foro. | Media |
-| RF-A-06 | El sistema debe ofrecer una opción de "Cerrar sesión" que limpie `sessionStorage` y redirija a la landing. | Alta |
-| RF-A-07 | El acceso a `forum.html` debe estar restringido: si no hay sesión activa, redirigir a `login.html`. | Alta |
+| RF-A-01 | El sistema debe mostrar una página de login con campos de email y contraseña. | Alta |
+| RF-A-02 | El sistema debe autenticar al usuario mediante `supabase.auth.signInWithPassword()` contra Supabase Auth. | Alta |
+| RF-A-03 | Si las credenciales son incorrectas, el sistema debe mostrar el mensaje de error de Supabase traducido al español, sin recargar la página. | Alta |
+| RF-A-04 | Si las credenciales son correctas, Supabase emite un JWT que se persiste automáticamente en `localStorage`; el sistema redirige al foro. | Alta |
+| RF-A-05 | Si el usuario ya tiene una sesión JWT activa (`supabase.auth.getSession()`), al acceder a `login.html` debe ser redirigido automáticamente al foro. | Media |
+| RF-A-06 | El sistema debe ofrecer una opción de "Cerrar sesión" que invoque `supabase.auth.signOut()` y redirija a la landing. | Alta |
+| RF-A-07 | El acceso a `forum.html` y `stats.html` debe estar restringido: si no hay JWT válido activo, redirigir a `login.html`. | Alta |
 
 ---
 
@@ -107,19 +124,19 @@ EcoComponents FIE
 
 | ID | Descripción | Prioridad |
 |---|---|---|
-| RF-C-01 | El foro debe cargar y mostrar todas las publicaciones precargadas en `data.json` al inicializarse. | Alta |
+| RF-C-01 | El foro debe cargar y mostrar todas las publicaciones almacenadas en la tabla `publicaciones` de Supabase al inicializarse. | Alta |
 | RF-C-02 | Cada publicación debe mostrarse como una tarjeta (card) con: imagen, título, descripción, tipo, estado del componente, semestre de origen y nombre del publicador. | Alta |
 | RF-C-03 | El foro debe ofrecer un filtro por tipo de publicación (donación / préstamo / intercambio). | Alta |
 | RF-C-04 | El foro debe ofrecer un filtro por semestre de origen del componente. | Alta |
-| RF-C-05 | Los filtros deben aplicarse de forma combinada (tipo Y semestre simultáneamente). | Media |
-| RF-C-06 | Debe existir una opción para limpiar los filtros y mostrar todas las publicaciones. | Media |
+| RF-C-05 | Los filtros deben enviarse como parámetros de query a la API REST de Supabase y aplicarse de forma combinada (tipo Y semestre simultáneamente). | Media |
+| RF-C-06 | Debe existir una opción para limpiar los filtros y recargar todas las publicaciones desde Supabase. | Media |
 | RF-C-07 | Cada tarjeta debe identificar visualmente el tipo de publicación mediante un badge de color diferenciado: verde para donación, azul para préstamo, naranja para intercambio. | Alta |
 | RF-C-08 | El foro debe incluir un botón "Publicar oferta" visible para el usuario autenticado. | Alta |
 | RF-C-09 | Al presionar "Publicar oferta", debe abrirse un formulario modal con los campos: título, descripción, tipo, URL de imagen, estado del componente y semestre de origen. | Alta |
-| RF-C-10 | Al enviar el formulario de nueva publicación, el sistema debe agregar la oferta al array en memoria y re-renderizar el foro sin recargar la página. | Alta |
-| RF-C-11 | La nueva publicación debe asignarse automáticamente al usuario de la sesión activa. | Alta |
-| RF-C-12 | Cada tarjeta debe incluir un botón "Contactar" que al presionarse muestre el nombre y dato de contacto del publicador (correo o número). | Alta |
-| RF-C-13 | Las publicaciones agregadas en sesión no persisten al recargar la página. Esto debe quedar documentado para el usuario. | Media |
+| RF-C-10 | Al enviar el formulario, el sistema debe insertar la publicación en Supabase (`POST` con JWT); tras confirmación de la API, recargar la lista del foro. | Alta |
+| RF-C-11 | El campo `usuario_id` de la nueva publicación debe asignarse automáticamente desde el JWT de la sesión activa (`supabase.auth.getUser()`). | Alta |
+| RF-C-12 | Cada tarjeta debe incluir un botón "Contactar" que muestre el nombre y dato de contacto del publicador, obtenido mediante join con la tabla `perfiles`. | Alta |
+| RF-C-13 | Las publicaciones persisten en la base de datos y sobreviven al recargar la página. | Alta |
 
 ---
 
@@ -127,8 +144,8 @@ EcoComponents FIE
 
 | ID | Descripción | Prioridad |
 |---|---|---|
-| RF-D-01 | La sección de estadísticas debe mostrar el total de publicaciones activas (precargadas + en memoria). | Alta |
-| RF-D-02 | Debe mostrar el conteo desglosado por tipo: donaciones, préstamos e intercambios. | Alta |
+| RF-D-01 | La sección de estadísticas debe mostrar el total real de publicaciones consultando la tabla `publicaciones` en Supabase. | Alta |
+| RF-D-02 | Debe mostrar el conteo desglosado por tipo (donaciones, préstamos, intercambios) mediante consultas filtradas a la API REST de Supabase. | Alta |
 | RF-D-03 | Debe calcular y mostrar el CO₂ estimado evitado, usando la fórmula: `total_publicaciones × 0.5 kg`. | Media |
 | RF-D-04 | Debe calcular y mostrar los residuos electrónicos estimados evitados, usando la fórmula: `total_publicaciones × 0.3 kg`. | Media |
 | RF-D-05 | Las cifras de CO₂ y residuos deben estar etiquetadas como "estimaciones con fines educativos". | Alta |
@@ -167,7 +184,7 @@ EcoComponents FIE
 | ID | Descripción |
 |---|---|
 | RNF-US-01 | La interfaz debe ser intuitiva: un estudiante sin experiencia previa debe poder publicar una oferta en menos de 3 pasos desde el foro. |
-| RNF-US-02 | Los mensajes de error deben ser claros y en español. |
+| RNF-US-02 | Los mensajes de error (incluyendo respuestas de error de la API de Supabase) deben mostrarse en español y de forma comprensible para el usuario. |
 | RNF-US-03 | El contraste de colores debe seguir el estándar WCAG AA (mínimo 4.5:1 para texto normal). |
 | RNF-US-04 | Los badges de tipo de publicación deben ser legibles incluso sin considerar el color (incluir texto, no solo color). |
 
@@ -175,9 +192,9 @@ EcoComponents FIE
 
 | ID | Descripción |
 |---|---|
-| RNF-PE-01 | La aplicación debe cargar completamente en menos de 3 segundos en una conexión estándar de campus. |
-| RNF-PE-02 | Los filtros del foro deben aplicarse de forma instantánea (sin delay perceptible). |
-| RNF-PE-03 | No se deben cargar librerías externas de gran tamaño; el peso total de assets no debe superar 5 MB. |
+| RNF-PE-01 | La aplicación debe cargar completamente en menos de 3 segundos en una conexión estándar de campus, considerando el tiempo de respuesta de la API de Supabase. |
+| RNF-PE-02 | Los filtros del foro deben ejecutar la consulta a Supabase y re-renderizar las cards en menos de 2 segundos. |
+| RNF-PE-03 | No se deben cargar librerías externas de gran tamaño; el peso total de assets estáticos no debe superar 5 MB (excluyendo imágenes referenciadas por URL). |
 
 ### 4.3 Compatibilidad
 
@@ -185,23 +202,25 @@ EcoComponents FIE
 |---|---|
 | RNF-CO-01 | La aplicación debe funcionar correctamente en las versiones actuales de Chrome, Firefox y Edge. |
 | RNF-CO-02 | La aplicación debe ser responsiva y funcional en pantallas desde 320px de ancho (móviles) hasta 1920px (escritorio). |
-| RNF-CO-03 | No se deben usar APIs del navegador que requieran HTTPS para funcionar en un entorno local (file://). |
+| RNF-CO-03 | La aplicación debe servirse desde un servidor HTTP (no `file://`), ya que las llamadas `fetch()` a Supabase requieren un origen válido con HTTPS o localhost. |
 
 ### 4.4 Mantenibilidad
 
 | ID | Descripción |
 |---|---|
-| RNF-MA-01 | El código JavaScript debe estar organizado en módulos separados por responsabilidad (`auth.js`, `forum.js`, `stats.js`, `nav.js`, `data.js`). |
-| RNF-MA-02 | El archivo `data.json` debe ser el único punto de configuración de usuarios y datos precargados. |
+| RNF-MA-01 | El código JavaScript debe estar organizado en módulos separados por responsabilidad (`supabase.js`, `auth.js`, `forum.js`, `stats.js`, `nav.js`). |
+| RNF-MA-02 | El archivo `js/supabase.js` debe ser el único punto de configuración de la URL y `anon key` del proyecto Supabase. |
 | RNF-MA-03 | Los estilos deben usar variables CSS (`--color-primary`, etc.) para facilitar cambios de paleta sin editar múltiples archivos. |
-| RNF-MA-04 | El proyecto debe incluir un `README.md` con instrucciones claras para abrir la aplicación y las credenciales de prueba. |
+| RNF-MA-04 | El proyecto debe incluir un `README.md` con instrucciones de configuración de Supabase, instrucciones para servir el proyecto y credenciales de prueba. |
 
-### 4.5 Seguridad (Simulada)
+### 4.5 Seguridad
 
 | ID | Descripción |
 |---|---|
-| RNF-SE-01 | Las contraseñas en `data.json` son texto plano con fines de simulación; el documento debe advertir que esto NO es una práctica para producción. |
-| RNF-SE-02 | Las rutas protegidas (`forum.html`) deben verificar la sesión al cargarse y redirigir si no existe. |
+| RNF-SE-01 | La autenticación debe usar Supabase Auth con JWT; no se deben almacenar contraseñas en ningún archivo del repositorio. |
+| RNF-SE-02 | La `anon key` de Supabase es pública por diseño; la seguridad de los datos se garantiza mediante políticas RLS (Row Level Security) activas en todas las tablas. |
+| RNF-SE-03 | Las rutas protegidas (`forum.html`, `stats.html`) deben verificar el JWT con `supabase.auth.getSession()` al cargarse y redirigir a `login.html` si no existe sesión válida. |
+| RNF-SE-04 | Solo el autor de una publicación debe poder editarla o eliminarla; esto se garantiza mediante políticas RLS en la tabla `publicaciones` (columna `usuario_id = auth.uid()`). |
 
 ### 4.6 Estética y Marca
 
@@ -216,38 +235,52 @@ EcoComponents FIE
 ## 5. Criterios de Aceptación por Módulo
 
 ### Módulo A — Autenticación
-- ✅ El login rechaza credenciales incorrectas con mensaje visible.
-- ✅ El login redirige al foro con credenciales correctas de cualquier usuario del JSON.
-- ✅ Al cerrar sesión, no se puede acceder al foro sin volver a autenticarse.
+- ✅ El login rechaza credenciales incorrectas con mensaje de error visible en español.
+- ✅ El login redirige al foro tras autenticación exitosa con cualquier usuario de prueba creado en Supabase Auth.
+- ✅ Al cerrar sesión (`signOut()`), acceder a `forum.html` redirige a `login.html`.
+- ✅ Con sesión activa, acceder a `login.html` redirige automáticamente al foro.
 
 ### Módulo C — Foro
-- ✅ Al cargar el foro, se muestran todas las publicaciones del JSON.
-- ✅ Al filtrar por "donación", solo aparecen publicaciones de tipo `donacion`.
+- ✅ Al cargar el foro, se muestran todas las publicaciones almacenadas en la tabla `publicaciones` de Supabase.
+- ✅ Al filtrar por "donación", la petición a Supabase incluye `?tipo=eq.donacion` y solo se muestran publicaciones de ese tipo.
 - ✅ Al combinar filtro tipo "préstamo" + semestre "4to", solo aparecen publicaciones que coincidan con ambos criterios.
-- ✅ Una nueva publicación creada aparece inmediatamente en el foro sin recargar la página.
-- ✅ El botón "Contactar" muestra el dato de contacto del publicador.
+- ✅ Una nueva publicación creada se inserta en Supabase y aparece en el foro tras recargar la lista.
+- ✅ Al recargar la página del foro, las publicaciones creadas previamente siguen apareciendo (persistencia real).
+- ✅ El botón "Contactar" muestra el dato de contacto del publicador obtenido desde la tabla `perfiles`.
 
 ### Módulo D — Estadísticas
-- ✅ Si hay 10 publicaciones, el CO₂ evitado muestra `5.0 kg`.
-- ✅ Si hay 10 publicaciones, los residuos muestran `3.0 kg`.
-- ✅ Al crear una nueva publicación en el foro y luego visitar estadísticas, los contadores reflejan el nuevo total.
+- ✅ Si hay 10 publicaciones en Supabase, el CO₂ evitado muestra `5.0 kg`.
+- ✅ Si hay 10 publicaciones en Supabase, los residuos muestran `3.0 kg`.
+- ✅ Al crear una nueva publicación y luego visitar estadísticas, los contadores reflejan el nuevo total consultado desde Supabase.
 
 ---
 
 ## 6. Datos de Prueba Predefinidos
 
-### Usuarios del sistema (`data.json`)
+### Usuarios del sistema (creados en Supabase Auth — Panel Dashboard)
 
-| ID | Nombre | Usuario | Contraseña | Semestre | Contacto |
-|---|---|---|---|---|---|
-| u001 | Juan Pérez | jperez | fiepas123 | 6to | jperez@fie.edu |
-| u002 | María López | mlopez | fiepas123 | 4to | mlopez@fie.edu |
-| u003 | Carlos Sánchez | csanchez | fiepas123 | 8vo | csanchez@fie.edu |
+| Nombre | Email | Semestre | Contacto |
+|---|---|---|---|
+| Juan Pérez | jperez@fie.edu | 6to | jperez@fie.edu |
+| María López | mlopez@fie.edu | 4to | mlopez@fie.edu |
+| Carlos Sánchez | csanchez@fie.edu | 8vo | csanchez@fie.edu |
 
-### Publicaciones precargadas (mínimo requerido)
-- Al menos 10 publicaciones distribuidas: 4 donaciones, 3 préstamos, 3 intercambios.
-- Abarcar al menos 3 semestres distintos de origen.
-- Variedad de estados: nuevo, buen estado, desgaste leve, para repuesto.
+> Las contraseñas se definen en el panel de Supabase Auth durante la configuración (ST-0) y se documentan en `README.md`. No se almacenan en ningún archivo del repositorio.
+
+### Tabla `perfiles` (poblada con trigger automático de Supabase)
+
+| Campo | Tipo | Descripción |
+|---|---|---|
+| id | uuid | FK a `auth.users.id` (asignado por Supabase) |
+| nombre | text | Nombre completo del estudiante |
+| semestre | text | Semestre actual del estudiante |
+| carrera | text | Carrera dentro de la FIE |
+| contacto | text | Email o teléfono de contacto |
+
+### Tabla `publicaciones` (datos de prueba insertados por SQL en ST-0)
+- Al menos 10 registros distribuidos: 4 donaciones, 3 préstamos, 3 intercambios.
+- Abarcar al menos 3 semestres distintos de origen (`semestre_origen`).
+- Variedad de estados: `nuevo`, `buen estado`, `desgaste leve`, `para repuesto`.
 
 ---
 
@@ -256,15 +289,53 @@ EcoComponents FIE
 | Restricción | Motivo |
 |---|---|
 | Sin frameworks JS (React, Vue, etc.) | Simplicidad y aprendizaje de JS vanilla |
-| Sin backend ni base de datos | Limitación del alcance del proyecto académico |
-| Sin `localStorage` para publicaciones | Las nuevas publicaciones son temporales por diseño |
-| Sin subida de imágenes | Se usan URLs externas por simplicidad |
-| Íconos opcionales vía CDN | Font Awesome o similar; única dependencia externa permitida |
+| Sin servidor PHP propio | Se usa Supabase como BaaS; no se requiere backend personalizado |
+| Sin registro público de usuarios | Las cuentas se crean manualmente en el panel de Supabase Auth |
+| Sin subida de archivos binarios | Las imágenes se referencian por URL externa por simplicidad |
+| Íconos opcionales vía CDN | Font Awesome o similar; única dependencia de UI permitida |
+| Requiere conexión a internet | La aplicación depende de la API REST de Supabase en todo momento |
+| Debe servirse desde HTTP/HTTPS | Las llamadas `fetch()` a Supabase no funcionan desde `file://` |
 
 ---
 
-## 8. Historial de Versiones
+## 8. Esquema de Base de Datos (Supabase / PostgreSQL)
+
+### Tabla: `perfiles`
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| id | uuid | PK, FK → auth.users | Identificador del usuario (asignado por Supabase Auth) |
+| nombre | text | NOT NULL | Nombre completo |
+| semestre | text | | Semestre en curso |
+| carrera | text | | Carrera dentro de la FIE |
+| contacto | text | | Email o teléfono visible a otros usuarios |
+
+### Tabla: `publicaciones`
+| Columna | Tipo | Restricción | Descripción |
+|---|---|---|---|
+| id | uuid | PK, default gen_random_uuid() | Identificador único de la publicación |
+| titulo | text | NOT NULL | Nombre del componente |
+| descripcion | text | | Descripción detallada |
+| tipo | text | NOT NULL, CHECK IN ('donacion','prestamo','intercambio') | Modalidad de la oferta |
+| imagen_url | text | | URL de imagen del componente |
+| estado | text | CHECK IN ('nuevo','buen estado','desgaste leve','para repuesto') | Condición física del componente |
+| semestre_origen | text | | Semestre en que se usó originalmente |
+| usuario_id | uuid | FK → perfiles.id | Autor de la publicación |
+| fecha_creacion | timestamptz | default now() | Fecha de inserción automática |
+
+### Políticas RLS requeridas
+| Tabla | Operación | Política |
+|---|---|---|
+| `perfiles` | SELECT | Usuarios autenticados pueden leer todos los perfiles |
+| `perfiles` | UPDATE | Solo el propio usuario puede editar su perfil |
+| `publicaciones` | SELECT | Usuarios autenticados pueden leer todas las publicaciones |
+| `publicaciones` | INSERT | Usuarios autenticados pueden insertar; `usuario_id` debe coincidir con `auth.uid()` |
+| `publicaciones` | UPDATE / DELETE | Solo el autor (`usuario_id = auth.uid()`) puede modificar o eliminar |
+
+---
+
+## 9. Historial de Versiones
 
 | Versión | Fecha | Descripción |
 |---|---|---|
-| 1.0 | — | Versión inicial del documento de requerimientos |
+| 1.0 | — | Versión inicial: frontend estático con `data.json` simulado |
+| 2.0 | — | Migración a Supabase (PostgreSQL + Auth); persistencia y autenticación reales |
