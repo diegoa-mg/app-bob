@@ -2,13 +2,13 @@
 
 ## Resumen General
 
-**Objetivo:** Desarrollar una aplicación web estática con HTML, CSS y JavaScript Vanilla que permita a los estudiantes de la Facultad de Ingeniería Electromecánica (FIE) donar, prestar e intercambiar componentes electromecánicos de proyectos anteriores, promoviendo la conciencia ambiental y la reducción de residuos.
+**Objetivo:** Desarrollar una aplicación web con HTML, CSS y JavaScript Vanilla que permita a los estudiantes de la Facultad de Ingeniería Electromecánica (FIE) donar, prestar e intercambiar componentes electromecánicos de proyectos anteriores, promoviendo la conciencia ambiental y la reducción de residuos.
 
-**Alcance:** Solo frontend estático. El "backend" es simulado mediante un archivo `data.json` con datos precargados. Las nuevas publicaciones se guardan en memoria (array JS, se pierden al recargar). Sin autenticación real.
+**Alcance:** Frontend estático conectado a una base de datos PostgreSQL real mediante Supabase. Las publicaciones persisten en la BD. Sin autenticación real (login validado contra tabla de usuarios).
 
-**Stack:** HTML5, CSS3, JavaScript Vanilla (ES6+), sin frameworks ni librerías externas (opcional: íconos con Font Awesome CDN).
+**Stack:** HTML5, CSS3, JavaScript Vanilla (ES6+), Supabase (PostgreSQL + REST API). Sin frameworks ni librerías externas (opcional: íconos con Font Awesome CDN).
 
-**Fuera de alcance:** Persistencia real, registro de usuarios, pagos, backend real, base de datos.
+**Fuera de alcance:** Registro de usuarios, pagos, servidor propio.
 
 ---
 
@@ -256,10 +256,57 @@ Navbar siempre visible:
 
 ---
 
-## Credenciales de Prueba (definidas en data.json)
+## Credenciales de Prueba (en base de datos Supabase)
 
 | Usuario | Contraseña | Semestre |
 |---|---|---|
 | jperez | fiepas123 | 6to |
 | mlopez | fiepas123 | 4to |
 | csanchez | fiepas123 | 8vo |
+
+---
+
+## Setup local — cómo correr el proyecto
+
+> **Requisitos:** Solo un browser. No se necesita Node, npm ni servidor.
+
+1. Clona el repo:
+   ```bash
+   git clone https://github.com/diegoa-mg/app-bob.git
+   cd app-bob
+   ```
+
+2. Crea tu archivo de credenciales locales:
+   ```bash
+   cp js/config.example.js js/config.js
+   ```
+
+3. Abre `js/config.js` y reemplaza los valores con las credenciales reales de Supabase.
+   Pídelas al responsable del proyecto (**Fer**).
+
+4. Abre `index.html` en el browser (o usa **Live Server** en VS Code).
+
+> `js/config.js` está en `.gitignore` — **nunca lo subas al repo**.
+
+---
+
+## Orden de scripts en cada página HTML
+
+Todas las páginas deben incluir los scripts en este orden antes de su módulo propio:
+
+```html
+<script src="js/config.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/[modulo-de-la-vista].js"></script>
+```
+
+## Cómo consumir los datos desde cualquier módulo JS
+
+```js
+document.addEventListener('ecoDataReady', function () {
+  // window.ecoData.publicaciones — array con todas las publicaciones
+  // window.ecoData.usuarios      — array con todos los usuarios
+  console.log(window.ecoData.publicaciones);
+});
+```
