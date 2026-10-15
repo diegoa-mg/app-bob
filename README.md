@@ -34,7 +34,7 @@ Navegador (HTML + CSS + JS Vanilla)
 ## Estructura del Proyecto
 
 ```
-ecocomponents-fie/
+renova/
 ├── index.html          # Landing page
 ├── login.html          # Login real (Supabase Auth)
 ├── forum.html          # Foro de publicaciones
