@@ -1,14 +1,33 @@
-# Plan de Trabajo — EcoComponents FIE
+# Plan de Trabajo — Renova
 
 ## Resumen General
 
-**Objetivo:** Desarrollar una aplicación web estática con HTML, CSS y JavaScript Vanilla que permita a los estudiantes de la Facultad de Ingeniería Electromecánica (FIE) donar, prestar e intercambiar componentes electromecánicos de proyectos anteriores, promoviendo la conciencia ambiental y la reducción de residuos.
+**Objetivo:** Desarrollar una aplicación web que permita a los estudiantes de la Facultad de Ingeniería Electromecánica (FIE) donar, prestar e intercambiar componentes electromecánicos de proyectos anteriores, promoviendo la conciencia ambiental y la reducción de residuos.
 
-**Alcance:** Solo frontend estático. El "backend" es simulado mediante un archivo `data.json` con datos precargados. Las nuevas publicaciones se guardan en memoria (array JS, se pierden al recargar). Sin autenticación real.
+**Alcance:** Frontend estático con HTML, CSS y JavaScript Vanilla (ES6+). Backend y persistencia real provistos por **Supabase** (PostgreSQL gestionado en la nube). La comunicación entre el frontend y Supabase se realiza mediante llamadas `fetch()` a la API REST de Supabase directamente desde el navegador.
 
-**Stack:** HTML5, CSS3, JavaScript Vanilla (ES6+), sin frameworks ni librerías externas (opcional: íconos con Font Awesome CDN).
+**Stack:**
+- **Frontend:** HTML5, CSS3, JavaScript Vanilla (ES6+)
+- **Backend / Base de datos:** Supabase (PostgreSQL + API REST + Auth integrada)
+- **Autenticación:** Supabase Auth (email/password)
+- **Dependencias externas opcionales:** Font Awesome CDN (íconos)
 
-**Fuera de alcance:** Persistencia real, registro de usuarios, pagos, backend real, base de datos.
+**Fuera de alcance:** Servidor PHP propio, registro público libre de usuarios (solo el administrador crea cuentas en Supabase), pagos, subida de archivos binarios.
+
+---
+
+## Arquitectura General
+
+```
+Navegador (HTML + CSS + JS Vanilla)
+        │
+        │  fetch() con API Key y JWT
+        ▼
+  Supabase Cloud
+  ├── Auth          → Autenticación email/password, JWT
+  ├── Database      → PostgreSQL: tablas usuarios, publicaciones
+  └── REST API      → Endpoints auto-generados por tabla
+```
 
 ---
 
@@ -17,23 +36,23 @@
 ```
 ecocomponents-fie/
 ├── index.html          # Landing page
-├── login.html          # Login simulado
+├── login.html          # Login real (Supabase Auth)
 ├── forum.html          # Foro de publicaciones
 ├── about.html          # Sobre nosotros
 ├── stats.html          # Estadísticas de impacto
 ├── css/
 │   └── styles.css      # Estilos globales
 ├── js/
-│   ├── data.js         # Carga y gestión del JSON en memoria
-│   ├── auth.js         # Lógica de login simulado
-│   ├── forum.js        # Lógica del foro (listar, filtrar, publicar)
-│   ├── stats.js        # Cálculo dinámico de estadísticas
-│   └── nav.js          # Navegación y estado de sesión
-├── data/
-│   └── data.json       # Datos simulados: usuarios, publicaciones, estadísticas base
+│   ├── supabase.js     # Inicialización del cliente Supabase (URL + anon key)
+│   ├── auth.js         # Login, logout y verificación de sesión con Supabase Auth
+│   ├── forum.js        # CRUD de publicaciones via API REST de Supabase
+│   ├── stats.js        # Consulta de conteos desde Supabase para métricas
+│   └── nav.js          # Navegación y estado de sesión (JWT)
 └── assets/
-    └── images/         # Imágenes de componentes y UI
+    └── images/         # Imágenes estáticas de UI
 ```
+
+> **Nota:** Ya no existe la carpeta `data/` ni el archivo `data.json`. Los datos residen en Supabase.
 
 ---
 
@@ -41,34 +60,60 @@ ecocomponents-fie/
 
 ---
 
-### ST-1 — Estructura base y datos simulados
+### ST-0 — Configuración de Supabase y diseño del esquema de base de datos
 
 **Status:** `[ ] pending`
 
 **Intent:**
-Crear el esqueleto del proyecto con la estructura de archivos, el archivo `data.json` con datos precargados suficientes para que todas las demás vistas funcionen, y los estilos CSS globales con paleta de colores ecológica.
+Preparar el entorno de Supabase antes de escribir cualquier línea de código frontend. Esta sub-tarea define la base de toda la persistencia real de la aplicación.
 
 **Expected Outcomes:**
-- Estructura de carpetas y archivos HTML vacíos creados, incluyendo `assets/images/` con imágenes placeholder.
-- `data.json` con al menos 3 usuarios, 10 publicaciones (mezcla de donación, préstamo e intercambio). Sin objeto `estadisticas` — las métricas se calculan dinámicamente en `stats.js` a partir del array de publicaciones.
-- `styles.css` con variables CSS, reset, tipografía, paleta verde/ecológica y componentes base (botones, cards, navbar). Otros componentes (modal, formularios, badges, barras de gráfico) serán agregados por cada subtarea que los necesite.
+- Proyecto Supabase creado y accesible con URL y `anon key`.
+- Tabla `perfiles` creada (extiende la tabla interna `auth.users` de Supabase).
+- Tabla `publicaciones` creada con todos los campos necesarios.
+- Políticas RLS (Row Level Security) configuradas: solo usuarios autenticados pueden leer; solo el autor puede insertar/editar sus propias publicaciones.
+- Al menos 3 usuarios de prueba creados desde el panel de Supabase Auth.
+- Al menos 10 publicaciones de datos de prueba insertadas directamente en el editor SQL de Supabase.
+- Archivo `js/supabase.js` creado con la inicialización del cliente usando la URL y anon key del proyecto.
 
 **Todo List:**
-1. Crear la estructura de carpetas del proyecto (`css/`, `js/`, `data/`, `assets/images/`).
-2. Agregar imágenes placeholder en `assets/images/` (mínimo una por categoría de componente electromecánico) que serán referenciadas por las publicaciones en el JSON.
-3. Crear `data/data.json` con el esquema de usuarios y publicaciones. Las publicaciones usarán rutas relativas a `assets/images/` en el campo `imagen`.
-4. Crear `css/styles.css` con variables de color, tipografía y los componentes base: botones, cards y navbar.
-5. Crear los 5 archivos HTML con estructura base (head con link a `styles.css`, navbar placeholder, main vacío, footer).
-6. Crear `js/data.js` que carga el JSON vía `fetch` y expone `window.ecoData = { usuarios: [...], publicaciones: [...] }` como objeto global raw.
+1. Crear una cuenta en [supabase.com](https://supabase.com) y crear un nuevo proyecto.
+2. Diseñar y ejecutar el SQL para crear la tabla `perfiles`: `{ id (uuid, FK auth.users), nombre, semestre, carrera, contacto }`.
+3. Diseñar y ejecutar el SQL para crear la tabla `publicaciones`: `{ id, titulo, descripcion, tipo, imagen_url, estado, semestre_origen, usuario_id (FK perfiles), fecha_creacion }`.
+4. Habilitar RLS en ambas tablas y crear las políticas de acceso.
+5. Crear los 3 usuarios de prueba desde Supabase Dashboard → Authentication → Users.
+6. Insertar los datos de prueba (10+ publicaciones) usando el editor SQL del panel.
+7. Crear `js/supabase.js` con la URL del proyecto y la `anon key` pública.
 
 **Relevant Context:**
-- Esquema de usuarios: `{ id, nombre, usuario, password, semestre, carrera, contacto }`
-- Esquema de publicaciones: `{ id, titulo, descripcion, tipo, imagen, estado, semestre_origen, usuario_id, fecha }`
-- Tipos de publicación: `"donacion"`, `"prestamo"`, `"intercambio"`
-- Estados del componente: `"nuevo"`, `"buen estado"`, `"desgaste leve"`, `"para repuesto"`
-- `window.ecoData` expone solo datos raw — cada módulo (auth.js, forum.js, stats.js) realiza sus propias búsquedas/filtros directamente sobre los arrays.
-- Las estadísticas se calculan al vuelo en `stats.js` desde `window.ecoData.publicaciones`; no se necesita un objeto `estadisticas` en el JSON.
-- `js/nav.js` **no se crea en ST-1** — es responsabilidad de ST-2 (Landing Page), donde se construye la navbar por primera vez.
+- La `anon key` de Supabase es pública y segura para usarse en el frontend, siempre que RLS esté correctamente configurado.
+- Tipos de publicación: `'donacion'`, `'prestamo'`, `'intercambio'`
+- Estados del componente: `'nuevo'`, `'buen estado'`, `'desgaste leve'`, `'para repuesto'`
+- La tabla `perfiles` se llena automáticamente con un trigger de Supabase al crear un usuario nuevo en Auth.
+
+---
+
+### ST-1 — Estructura base y estilos globales
+
+**Status:** `[ ] pending`
+
+**Intent:**
+Crear el esqueleto del proyecto: estructura de carpetas, archivos HTML vacíos con su estructura base y los estilos CSS globales con paleta de colores ecológica. Esta sub-tarea ya no incluye la creación del `data.json`.
+
+**Expected Outcomes:**
+- Estructura de carpetas y archivos HTML con cabecera, navbar placeholder y footer.
+- `styles.css` con variables CSS, reset, tipografía, paleta verde/ecológica y componentes base (botones, cards, navbar, badges, modal).
+- `js/supabase.js` ya disponible (viene de ST-0) y referenciado en todos los HTML.
+
+**Todo List:**
+1. Crear la estructura de carpetas del proyecto.
+2. Crear `css/styles.css` con variables de color, tipografía y componentes base reutilizables.
+3. Crear los 5 archivos HTML con estructura base (head con scripts, navbar placeholder, footer).
+4. Referenciar `js/supabase.js` en el `<head>` de todos los HTML como primer script.
+
+**Relevant Context:**
+- `js/supabase.js` debe cargarse antes que cualquier otro script JS en todos los HTML.
+- Paleta sugerida: verde primario `#2e7d32`, verde claro `#81c784`, neutros grises.
 
 ---
 
@@ -77,56 +122,56 @@ Crear el esqueleto del proyecto con la estructura de archivos, el archivo `data.
 **Status:** `[ ] pending`
 
 **Intent:**
-Crear la página de entrada de la aplicación. Es la primera impresión del proyecto; debe comunicar claramente la misión, invitar al login y mostrar un resumen del impacto de la plataforma.
+Crear la página de entrada de la aplicación. Debe comunicar la misión del proyecto, invitar al login y presentar los tres tipos de publicación.
 
 **Expected Outcomes:**
 - Hero section con nombre, slogan y botón "Comenzar" que lleva a `login.html`.
-- Sección de "Cómo funciona" con los 3 tipos de publicación (íconos + descripción breve).
+- Sección "¿Cómo funciona?" con los 3 tipos de publicación (íconos + descripción breve).
 - Sección de llamado a la acción con acceso al foro.
-- Navbar funcional con logo, nombre de la app y links de navegación (incluyendo manejo de sesión).
-- Footer con información de la facultad.
-- `js/nav.js` creado y funcional.
+- Navbar y footer con información de la institución.
 
 **Todo List:**
-1. Crear `js/nav.js` con la lógica de lectura de `eco_user` desde `sessionStorage` para mostrar/ocultar botón de logout en la navbar.
-2. Construir la navbar en `index.html` con logo, nombre de la app, links de navegación y vinculación a `nav.js`.
-3. Construir el hero section (imagen de fondo, titular, slogan, CTA).
-4. Construir la sección "¿Cómo funciona?" con cards de los 3 tipos.
-5. Construir el footer.
-6. Vincular `css/styles.css` y asegurar responsividad básica.
+1. Construir la navbar con logo, nombre de la app y links de navegación.
+2. Construir el hero section (imagen de fondo, titular, slogan, CTA hacia `login.html`).
+3. Construir la sección "¿Cómo funciona?" con cards de los 3 tipos.
+4. Construir el footer.
+5. Vincular `css/styles.css` y asegurar responsividad básica.
 
 **Relevant Context:**
-- El botón "Comenzar" debe redirigir a `login.html`.
-- Si ya hay sesión simulada (`sessionStorage` con `eco_user`), el CTA puede llevar directo al foro.
-- `js/nav.js` es creado aquí (no en ST-1) y será reutilizado por todas las páginas siguientes.
+- Si el usuario ya tiene una sesión JWT activa de Supabase (verificada en `auth.js`), el botón CTA puede redirigir directamente a `forum.html`.
 
 ---
 
-### ST-3 — Login Simulado (login.html + auth.js)
+### ST-3 — Autenticación Real (login.html + auth.js)
 
 **Status:** `[ ] pending`
 
 **Intent:**
-Implementar una página de login que valide usuario y contraseña contra los datos del `data.json`. Al autenticar correctamente, guarda el usuario en `sessionStorage` o `localStorage` y redirige al foro.
+Implementar el login y logout reales usando Supabase Auth. El usuario introduce su email y contraseña; Supabase valida y devuelve un JWT que se usa en todas las llamadas posteriores a la API.
 
 **Expected Outcomes:**
-- Formulario de login con campos usuario y contraseña.
-- Validación contra los usuarios del JSON (en `auth.js`).
-- Mensaje de error visible si las credenciales son incorrectas.
-- Redirección automática al foro si ya hay sesión activa.
-- Botón de "Cerrar sesión" en la navbar cuando el usuario está logueado.
+- Formulario de login con campos email y contraseña.
+- Llamada a `supabase.auth.signInWithPassword()` al enviar el formulario.
+- Mensaje de error visible si las credenciales son incorrectas (manejando la respuesta de error de Supabase).
+- Redirección automática a `forum.html` tras login exitoso.
+- Si ya hay sesión activa (`supabase.auth.getSession()`), redirigir directamente al foro.
+- Función `logout()` que llama a `supabase.auth.signOut()` y redirige a `index.html`.
+- Navbar muestra nombre del usuario y botón "Cerrar sesión" cuando hay sesión activa.
 
 **Todo List:**
-1. Crear `login.html` con formulario estilizado.
-2. Crear `js/auth.js` con función `login(usuario, password)` que busca en el array de usuarios.
-3. Guardar el objeto de usuario autenticado en `sessionStorage` como `eco_user`.
-4. Redirigir a `forum.html` tras login exitoso.
-5. Implementar `logout()` que limpia `sessionStorage` y redirige a `index.html`.
-6. En `js/nav.js`, leer `eco_user` y mostrar/ocultar el botón de logout en la navbar.
+1. Crear `login.html` con formulario estilizado (campos email y contraseña).
+2. Crear `js/auth.js` con la función `login(email, password)` que usa `supabase.auth.signInWithPassword()`.
+3. Manejar el error de Supabase y mostrarlo al usuario en español.
+4. Guardar la sesión: Supabase la persiste automáticamente en `localStorage`; no se requiere manejo manual.
+5. Redirigir a `forum.html` tras login exitoso.
+6. Implementar `logout()` que llama a `supabase.auth.signOut()` y redirige.
+7. En `js/nav.js`, usar `supabase.auth.getSession()` para leer la sesión y actualizar la navbar.
+8. En `forum.html` y `stats.html`, verificar sesión al cargar; si no existe, redirigir a `login.html`.
 
 **Relevant Context:**
-- Contraseñas están en texto plano en el JSON (simulación, no producción).
-- Proteger el foro: si se accede a `forum.html` sin sesión, redirigir a `login.html`.
+- Supabase persiste el JWT en `localStorage` automáticamente; no es necesario escribirlo manualmente.
+- Las contraseñas ya NO están en texto plano en ningún archivo del proyecto.
+- Los usuarios de prueba fueron creados en ST-0 con sus emails y contraseñas.
 
 ---
 
@@ -135,29 +180,32 @@ Implementar una página de login que valide usuario y contraseña contra los dat
 **Status:** `[ ] pending`
 
 **Intent:**
-Es el núcleo de la aplicación. Muestra todas las publicaciones cargadas del JSON más las creadas en memoria durante la sesión. Permite filtrar por tipo de publicación y por semestre de origen.
+Es el núcleo de la aplicación. Carga las publicaciones reales desde Supabase, permite filtrarlas, y permite crear nuevas publicaciones que se persisten en la base de datos.
 
 **Expected Outcomes:**
-- Grid/lista de cards con las publicaciones (imagen, nombre, tipo, estado, semestre, contacto).
-- Filtros funcionales por tipo (donación / préstamo / intercambio) y por semestre.
+- Grid de cards con publicaciones leídas desde la tabla `publicaciones` de Supabase.
+- Filtros funcionales por tipo y semestre (filtrado en la consulta a Supabase con parámetros de query).
 - Botón "Publicar oferta" que abre un formulario modal.
-- Formulario modal para crear nueva publicación (datos se agregan al array en memoria).
-- Botón "Contactar" en cada card que muestra el dato de contacto del publicador.
-- Indicador visual del tipo de publicación con color diferenciado.
+- Al enviar el formulario, la publicación se inserta en Supabase (`INSERT`) y la lista se recarga.
+- Botón "Contactar" que muestra nombre y contacto del publicador (join con tabla `perfiles`).
+- Badges visuales de color por tipo de publicación.
 
 **Todo List:**
 1. Crear la estructura HTML del foro con área de filtros y área de grid de cards.
-2. En `forum.js`, cargar publicaciones del JSON y renderizarlas como cards dinámicamente.
-3. Implementar los filtros de tipo y semestre con event listeners.
-4. Crear el modal "Nueva Publicación" con el formulario completo.
-5. Implementar la función que toma los datos del formulario y agrega al array en memoria, luego re-renderiza.
-6. Implementar el botón "Contactar" que muestra nombre y dato de contacto del publicador.
-7. Diferenciar visualmente los tipos con badges de color (verde=donación, azul=préstamo, naranja=intercambio).
+2. En `forum.js`, crear función `cargarPublicaciones(filtros)` que hace `GET` a la API REST de Supabase con los filtros activos.
+3. Renderizar las publicaciones como cards dinámicamente desde la respuesta JSON de Supabase.
+4. Implementar los filtros de tipo y semestre; cada cambio en los selectores llama de nuevo a `cargarPublicaciones()`.
+5. Crear el modal "Nueva Publicación" con el formulario completo.
+6. Implementar `crearPublicacion(datos)` que hace `POST` a Supabase con el JWT del usuario autenticado; asignar `usuario_id` desde la sesión activa.
+7. Tras inserción exitosa, cerrar el modal y recargar la lista de publicaciones.
+8. Implementar el botón "Contactar" que muestra datos del perfil del publicador.
+9. Aplicar badges de color por tipo.
 
 **Relevant Context:**
-- Las nuevas publicaciones creadas en sesión no persisten al recargar (es esperado y documentado).
-- El usuario logueado (desde `sessionStorage`) se asigna como `usuario_id` de las nuevas publicaciones.
-- El campo imagen del formulario acepta URL de imagen (para simplicidad sin subida de archivos real).
+- La API REST de Supabase permite filtros con parámetros de query: `?tipo=eq.donacion&semestre_origen=eq.4to`.
+- El `usuario_id` de la nueva publicación se obtiene de `supabase.auth.getUser()`.
+- La persistencia es **real**: las publicaciones nuevas sobreviven al recargar la página.
+- Las imágenes siguen referenciándose por URL (no hay subida de archivos binarios en este alcance).
 
 ---
 
@@ -166,26 +214,27 @@ Es el núcleo de la aplicación. Muestra todas las publicaciones cargadas del JS
 **Status:** `[ ] pending`
 
 **Intent:**
-Mostrar métricas de impacto ambiental calculadas dinámicamente a partir de las publicaciones en memoria. Refuerza el mensaje de concientización del proyecto.
+Mostrar métricas de impacto ambiental calculadas a partir de los datos reales en Supabase. Los contadores reflejan el estado actual de la base de datos.
 
 **Expected Outcomes:**
-- Contadores animados de: total de publicaciones, donaciones, préstamos, intercambios.
-- Estimación de CO₂ evitado (fórmula simple: cada componente reutilizado = X gramos de CO₂).
-- Estimación de residuos evitados en gramos/kg (dato fijo por componente).
-- Gráfico o visualización simple de la distribución por tipo (barras CSS o canvas básico).
-- Mensaje motivacional basado en el total acumulado.
+- Contadores con totales reales: total de publicaciones, donaciones, préstamos, intercambios.
+- Estimación de CO₂ evitado calculada desde el total real.
+- Estimación de residuos evitados calculada desde el total real.
+- Visualización gráfica de distribución por tipo (barras CSS).
+- Mensaje motivacional según el total.
 
 **Todo List:**
 1. Crear `stats.html` con la estructura de secciones de métricas.
-2. Crear `js/stats.js` que lee el array de publicaciones y calcula los totales.
-3. Implementar la fórmula de CO₂ evitado: `componentes * 0.5 kg` (valor estimado documentado).
-4. Implementar la fórmula de residuos evitados: `componentes * 0.3 kg`.
-5. Renderizar los contadores con una animación simple de contador creciente.
-6. Crear el gráfico de distribución con barras CSS (sin librerías).
+2. En `js/stats.js`, crear función `cargarEstadisticas()` que consulta Supabase con `select=count` agrupado por tipo.
+3. Calcular CO₂ evitado: `total_publicaciones × 0.5 kg`.
+4. Calcular residuos evitados: `total_publicaciones × 0.3 kg`.
+5. Renderizar los contadores con animación de incremento al cargar.
+6. Crear el gráfico de barras CSS con los porcentajes reales de cada tipo.
 
 **Relevant Context:**
-- Los valores de CO₂ y residuos son estimaciones con fines educativos, deben marcarse como tal en la UI.
-- Leer publicaciones desde el array global gestionado por `data.js`.
+- Supabase REST permite contar filas con `select=*&tipo=eq.donacion` y revisando el header `Content-Range` o usando funciones RPC.
+- Los valores de CO₂ y residuos son estimaciones educativas; deben marcarse como tal en la UI.
+- Esta vista requiere sesión activa (verificar al cargar).
 
 ---
 
@@ -194,45 +243,46 @@ Mostrar métricas de impacto ambiental calculadas dinámicamente a partir de las
 **Status:** `[ ] pending`
 
 **Intent:**
-Página informativa sobre el origen del proyecto, la misión ecológica y el equipo detrás de la iniciativa. Da credibilidad y contexto institucional.
+Página estática informativa sobre el origen del proyecto, la misión ecológica y el equipo.
 
 **Expected Outcomes:**
 - Sección de misión y visión del proyecto.
-- Sección "Nuestro equipo" con cards de los integrantes.
-- Sección de contexto: por qué la FIE adoptó esta iniciativa.
+- Sección "Nuestro equipo" con cards de los integrantes (datos hardcodeados en HTML).
+- Sección de contexto institucional.
 - Diseño coherente con el resto de la aplicación.
 
 **Todo List:**
 1. Crear `about.html` con las tres secciones descritas.
-2. Agregar cards de integrantes del equipo (nombre, rol, semestre) con datos hardcodeados en HTML.
-3. Redactar el texto de misión, visión y contexto institucional.
+2. Agregar cards de integrantes (nombre, rol, semestre) hardcodeados en HTML.
+3. Redactar texto de misión, visión y contexto.
 4. Asegurar consistencia visual con el resto del sitio.
 
 **Relevant Context:**
-- Esta página es completamente estática, sin JS dinámico necesario.
+- Esta página no realiza ninguna llamada a Supabase; es completamente estática.
 
 ---
 
-### ST-7 — Revisión final, responsividad y coherencia visual
+### ST-7 — Revisión final, responsividad y pruebas de integración
 
 **Status:** `[ ] pending`
 
 **Intent:**
-Asegurar que toda la aplicación funcione correctamente de extremo a extremo, que sea responsiva en móvil y escritorio, y que la experiencia de usuario sea coherente.
+Asegurar que toda la aplicación funcione correctamente de extremo a extremo con la base de datos real, que sea responsiva y que no haya errores de integración con Supabase.
 
 **Expected Outcomes:**
 - Todas las páginas se renderizan correctamente en móvil (320px+) y escritorio.
-- El flujo completo funciona: landing → login → foro → filtrar → publicar → estadísticas.
-- Sin errores en consola del navegador.
-- Navbar muestra correctamente el estado de sesión en todas las páginas.
-- Las credenciales de prueba están documentadas en un `README.md`.
+- El flujo completo funciona: landing → login real → foro (datos reales) → filtrar → publicar (persiste) → estadísticas (datos reales).
+- Las publicaciones creadas sobreviven al recargar la página.
+- Sin errores en consola del navegador (ni errores 4xx/5xx de la API de Supabase).
+- `README.md` con instrucciones de configuración, credenciales de prueba y URL del proyecto Supabase.
 
 **Todo List:**
 1. Revisar y ajustar responsividad con media queries en `styles.css`.
-2. Probar el flujo completo de usuario (login, publicar, filtrar, logout).
-3. Corregir errores de consola encontrados.
-4. Crear `README.md` con instrucciones de uso y credenciales de prueba.
-5. Verificar coherencia de paleta de colores, tipografía y espaciados en todas las vistas.
+2. Probar el flujo completo: login → publicar → verificar en Supabase Dashboard → recargar → confirmar persistencia.
+3. Verificar que RLS bloquea correctamente accesos no autenticados (probar sin sesión activa).
+4. Corregir errores de consola y errores de API.
+5. Crear `README.md` con: instrucciones de uso, emails y contraseñas de prueba, URL del proyecto Supabase.
+6. Verificar coherencia de paleta, tipografía y espaciados en las 5 vistas.
 
 ---
 
@@ -240,23 +290,45 @@ Asegurar que toda la aplicación funcione correctamente de extremo a extremo, qu
 
 ```
 Landing (index.html)
-    └─► Login (login.html)  [credenciales en data.json]
-            └─► Foro (forum.html)
-                    ├─► Ver cards de publicaciones
-                    ├─► Filtrar por tipo / semestre
-                    ├─► Publicar nueva oferta [modal]
-                    └─► Ver contacto del publicador
+    └─► Login (login.html)  ─► Supabase Auth (JWT real)
+            └─► Foro (forum.html)  ─► Supabase DB (datos reales)
+                    ├─► Ver publicaciones  [GET /publicaciones]
+                    ├─► Filtrar            [GET /publicaciones?tipo=eq.donacion]
+                    ├─► Publicar oferta    [POST /publicaciones + JWT]
+                    └─► Ver contacto       [JOIN con perfiles]
 Navbar siempre visible:
     ├─► Inicio (index.html)
-    ├─► Foro (forum.html)  [protegida: requiere sesión]
-    ├─► Estadísticas (stats.html)
+    ├─► Foro (forum.html)      [protegida: requiere JWT válido]
+    ├─► Estadísticas (stats.html)  [protegida: requiere JWT válido]
     ├─► Sobre Nosotros (about.html)
-    └─► Cerrar Sesión [visible solo con sesión activa]
+    └─► Cerrar Sesión          [supabase.auth.signOut()]
 ```
 
 ---
 
-## Credenciales de Prueba (definidas en data.json)
+## Credenciales de Prueba (creadas en Supabase Auth — ST-0)
+
+| Email | Contraseña | Semestre |
+|---|---|---|
+| jperez@fie.edu | (definir en ST-0) | 6to |
+| mlopez@fie.edu | (definir en ST-0) | 4to |
+| csanchez@fie.edu | (definir en ST-0) | 8vo |
+
+> Las contraseñas definitivas se establecen al crear los usuarios en el panel de Supabase durante ST-0 y se documentan en el `README.md`.
+
+---
+
+## Cambios Respecto a la Versión Original del Plan
+
+| Elemento | Plan Original | Plan Actualizado |
+|---|---|---|
+| Persistencia | `data.json` estático | PostgreSQL en Supabase |
+| Autenticación | Contraseñas en texto plano en JSON | Supabase Auth (JWT real) |
+| Nuevas publicaciones | Solo en memoria (se pierden al recargar) | Persisten en base de datos real |
+| Estadísticas | Calculadas desde array JS local | Calculadas desde consultas reales a Supabase |
+| `data.js` | Módulo de gestión del JSON | ❌ Eliminado (reemplazado por `supabase.js`) |
+| `auth.js` | Comparación manual en array JS | Usa `supabase.auth.signInWithPassword()` |
+| Nueva sub-tarea | — | ST-0: Configuración de Supabase y esquema de BD |
 
 | Usuario | Contraseña | Semestre |
 |---|---|---|
