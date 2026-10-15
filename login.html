@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar sesión — EcoComponentes FIE</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-card {
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+
+    .login-card h1 {
+      font-size: 1.4rem;
+      color: #1f2328;
+      margin-bottom: .25rem;
+    }
+
+    .login-card .subtitulo {
+      font-size: .875rem;
+      color: #57606a;
+      margin-bottom: 1.75rem;
+    }
+
+    .campo {
+      margin-bottom: 1.1rem;
+    }
+
+    .campo label {
+      display: block;
+      font-size: .85rem;
+      font-weight: 600;
+      color: #1f2328;
+      margin-bottom: .4rem;
+    }
+
+    .campo input {
+      width: 100%;
+      padding: .6rem .85rem;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: .95rem;
+      color: #1f2328;
+      background: #f7f8fa;
+      transition: border-color .15s, background .15s;
+      outline: none;
+    }
+
+    .campo input:focus {
+      border-color: #3b82d4;
+      background: #fff;
+    }
+
+    .error-msg {
+      display: none;
+      background: #fff3f3;
+      border: 1px solid #f7a8a8;
+      color: #c0392b;
+      font-size: .85rem;
+      padding: .6rem .85rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: .7rem;
+      background: #3b82d4;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .btn-submit:hover { background: #2563b0; }
+    .btn-submit:disabled { background: #93b8e8; cursor: not-allowed; }
+
+    .pie {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: .825rem;
+      color: #57606a;
+    }
+
+    .pie a { color: #3b82d4; text-decoration: none; }
+    .pie a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <h1>EcoComponentes FIE</h1>
+    <p class="subtitulo">Inicia sesión para acceder al foro.</p>
+
+    <div id="error-msg" class="error-msg" role="alert"></div>
+
+    <form id="form-login" novalidate>
+      <div class="campo">
+        <label for="usuario">Usuario</label>
+        <input
+          type="text"
+          id="usuario"
+          name="usuario"
+          autocomplete="username"
+          placeholder="Tu nombre de usuario"
+          required
+        />
+      </div>
+
+      <div class="campo">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          autocomplete="current-password"
+          placeholder="••••••••"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn-submit" id="btn-submit">
+        Iniciar sesión
+      </button>
+    </form>
+
+    <p class="pie">
+      <a href="../index.html">← Volver al inicio</a>
+    </p>
+  </div>
+
+  <!-- auth.js debe cargarse antes de nav.js -->
+  <script src="../js/auth.js"></script>
+  <script>
+    // Si ya hay sesión activa, ir directo al foro
+    if (getUsuarioActivo()) {
+      window.location.href = 'forum.html';
+    }
+
+    const form = document.getElementById('form-login');
+    const errorMsg = document.getElementById('error-msg');
+    const btnSubmit = document.getElementById('btn-submit');
+
+    function mostrarError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('visible');
+    }
+
+    function ocultarError() {
+      errorMsg.classList.remove('visible');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      ocultarError();
+
+      const usuario = document.getElementById('usuario').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!usuario || !password) {
+        mostrarError('Por favor, completa todos los campos.');
+        return;
+      }
+
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Verificando…';
+
+      const resultado = await login(usuario, password);
+
+      if (resultado.ok) {
+        window.location.href = 'forum.html';
+      } else {
+        mostrarError(resultado.mensaje);
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Iniciar sesión';
+      }
+    });
+  </script>
+</body>
+</html>
