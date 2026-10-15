@@ -3,40 +3,466 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EcoComponents FIE — Inicio</title>
+  <title>Renova — Reutiliza, comparte, construye</title>
+  <meta name="description" content="Renova: plataforma universitaria para donar, prestar e intercambiar objetos y materiales entre estudiantes de la FIE." />
   <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
-<body>
+<body class="landing-body">
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="navbar__inner">
-      <a href="index.html" class="navbar__brand">
-        <span class="navbar__logo">♻️</span>
-        <span>EcoComponents FIE</span>
+  <!-- ======================================================
+       NAVBAR — Landing variant (light)
+  ====================================================== -->
+  <nav class="navbar-landing" id="navbar">
+    <div class="navbar-landing__inner">
+
+      <a href="index.html" class="navbar-landing__brand">
+        <img src="assets/logos/renova-logo.svg" alt="Renova" class="navbar-landing__logo-img" />
+        <span class="navbar-landing__brand-name">Renova</span>
       </a>
-      <ul class="navbar__nav">
-        <li><a href="index.html" class="navbar__link navbar__link--active">Inicio</a></li>
-        <li><a href="forum.html" class="navbar__link">Foro</a></li>
-        <li><a href="stats.html" class="navbar__link">Estadísticas</a></li>
-        <li><a href="about.html" class="navbar__link">Sobre Nosotros</a></li>
-        <li><a href="login.html" class="navbar__link navbar__logout" id="btn-logout">Cerrar Sesión</a></li>
+
+      <ul class="navbar-landing__nav">
+        <li><a href="#inicio" class="navbar-landing__link navbar-landing__link--active">Inicio</a></li>
+        <li><a href="#como-funciona" class="navbar-landing__link">Cómo funciona</a></li>
+        <li><a href="about.html" class="navbar-landing__link">Nosotros</a></li>
       </ul>
+
+      <div class="navbar-landing__actions">
+        <!-- No session state -->
+        <a href="login.html" class="navbar-landing__login" id="nav-login">Iniciar sesión</a>
+        <a href="login.html" class="btn-landing-cta" id="nav-register">Regístrate con tu matrícula</a>
+
+        <!-- Session active (hidden by default) -->
+        <span class="navbar-landing__username hidden" id="nav-username"></span>
+        <a href="forum.html" class="btn-landing-cta hidden" id="nav-forum">Ir al Foro</a>
+        <a href="#" class="navbar-landing__login hidden" id="nav-logout">Cerrar sesión</a>
+      </div>
+
+      <button class="navbar-landing__hamburger" id="nav-hamburger" aria-label="Abrir menú" aria-expanded="false">
+        <i class="fa-solid fa-bars" id="hamburger-icon"></i>
+      </button>
+    </div>
+
+    <!-- Mobile menu — uses max-height transition, not display:none -->
+    <div class="navbar-landing__mobile hidden" id="nav-mobile">
+      <a href="#inicio">Inicio</a>
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="about.html">Nosotros</a>
+      <a href="login.html" class="mobile-cta" id="nav-mobile-cta">Regístrate con tu matrícula</a>
     </div>
   </nav>
 
-  <!-- Main -->
-  <main>
-  </main>
+  <!-- ======================================================
+       HERO SECTION
+  ====================================================== -->
+  <section class="hero" id="inicio">
+    <div class="hero__container">
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>Facultad de Ingeniería Electromecánica (FIE) &mdash; EcoComponents &copy; 2024</p>
-    <p>Promoviendo la reutilización de componentes y la conciencia ambiental.</p>
+      <div class="hero__content">
+        <p class="hero__eyebrow">
+          <i class="fa-solid fa-circle-dot" style="font-size:8px;"></i>
+          Un campus más vivo, entre todos
+        </p>
+        <h1 class="hero__title">
+          Dale una <span class="hero__title--highlight">segunda vida</span>
+          a lo que ya no usas
+        </h1>
+        <p class="hero__subtitle">
+          Dona, presta o intercambia objetos y materiales con estudiantes de tu universidad.
+        </p>
+
+        <div class="hero__search">
+          <i class="fa-solid fa-magnifying-glass hero__search-icon"></i>
+          <input
+            type="text"
+            class="hero__search-input"
+            placeholder="¿Qué estás buscando?"
+            aria-label="Buscar objetos"
+            id="hero-input"
+          />
+          <a href="login.html" class="btn-hero-search" id="hero-search-btn">Buscar</a>
+        </div>
+
+        <div class="hero__categories">
+          <a href="login.html" class="hero__cat-pill"><i class="fa-solid fa-book"></i> Libros</a>
+          <a href="login.html" class="hero__cat-pill"><i class="fa-solid fa-microchip"></i> Electrónica</a>
+          <a href="login.html" class="hero__cat-pill"><i class="fa-solid fa-screwdriver-wrench"></i> Herramientas</a>
+          <a href="login.html" class="hero__cat-pill"><i class="fa-solid fa-flask"></i> Lab & Ciencias</a>
+          <a href="login.html" class="hero__cat-pill"><i class="fa-solid fa-box"></i> Otros</a>
+        </div>
+      </div>
+
+      <div class="hero__image-wrap">
+        <img
+          src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&auto=format&fit=crop&q=80"
+          alt="Estudiantes universitarios compartiendo materiales en el campus"
+          class="hero__image"
+          loading="eager"
+        />
+        <div class="hero__float-badge">
+          <div class="hero__float-badge-icon">
+            <i class="fa-solid fa-recycle"></i>
+          </div>
+          <div class="hero__float-badge-text">
+            <strong>+10</strong>
+            <span>objetos compartidos</span>
+          </div>
+        </div>
+        <div class="hero__leaf hero__leaf--1"><i class="fa-solid fa-leaf"></i></div>
+        <div class="hero__leaf hero__leaf--2"><i class="fa-solid fa-seedling"></i></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================
+       FEATURED ITEMS SECTION
+  ====================================================== -->
+  <section class="featured" id="explorar">
+    <div class="featured__header container">
+      <div class="featured__header-left">
+        <span class="featured__label">Lo más reciente</span>
+        <h2 class="featured__title">Objetos destacados</h2>
+      </div>
+      <a href="login.html" class="featured__see-all" id="featured-see-all">
+        Ver todos <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+
+    <div class="featured__grid container">
+
+      <article class="feat-card">
+        <div class="feat-card__img-wrap">
+          <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&auto=format&fit=crop&q=70"
+               alt="Motor DC 12V" class="feat-card__img" loading="lazy" />
+          <button class="feat-card__fav" aria-label="Guardar en favoritos"><i class="fa-regular fa-heart"></i></button>
+          <span class="badge badge-donacion feat-card__badge">Donación</span>
+        </div>
+        <div class="feat-card__body">
+          <p class="feat-card__name">Motor DC 12V en buen estado</p>
+          <p class="feat-card__location"><i class="fa-solid fa-location-dot"></i> Facultad de Ingeniería</p>
+        </div>
+      </article>
+
+      <article class="feat-card">
+        <div class="feat-card__img-wrap">
+          <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&auto=format&fit=crop&q=70"
+               alt="Sensor PT100" class="feat-card__img" loading="lazy" />
+          <button class="feat-card__fav" aria-label="Guardar en favoritos"><i class="fa-regular fa-heart"></i></button>
+          <span class="badge badge-prestamo feat-card__badge">Préstamo</span>
+        </div>
+        <div class="feat-card__body">
+          <p class="feat-card__name">Sensor de temperatura PT100</p>
+          <p class="feat-card__location"><i class="fa-solid fa-location-dot"></i> Biblioteca Central</p>
+        </div>
+      </article>
+
+      <article class="feat-card">
+        <div class="feat-card__img-wrap">
+          <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400&auto=format&fit=crop&q=70"
+               alt="PLC Siemens S7-200" class="feat-card__img" loading="lazy" />
+          <button class="feat-card__fav" aria-label="Guardar en favoritos"><i class="fa-regular fa-heart"></i></button>
+          <span class="badge badge-intercambio feat-card__badge">Intercambio</span>
+        </div>
+        <div class="feat-card__body">
+          <p class="feat-card__name">PLC Siemens S7-200</p>
+          <p class="feat-card__location"><i class="fa-solid fa-location-dot"></i> Facultad de Ciencias</p>
+        </div>
+      </article>
+
+      <article class="feat-card">
+        <div class="feat-card__img-wrap">
+          <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&auto=format&fit=crop&q=70"
+               alt="Transformador 220V" class="feat-card__img" loading="lazy" />
+          <button class="feat-card__fav" aria-label="Guardar en favoritos"><i class="fa-regular fa-heart"></i></button>
+          <span class="badge badge-donacion feat-card__badge">Donación</span>
+        </div>
+        <div class="feat-card__body">
+          <p class="feat-card__name">Transformador 220V/12V 2A</p>
+          <p class="feat-card__location"><i class="fa-solid fa-location-dot"></i> Facultad de Arquitectura</p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ======================================================
+       HOW IT WORKS SECTION
+  ====================================================== -->
+  <section class="how-it-works" id="como-funciona">
+    <div class="container">
+
+      <div class="how-it-works__intro">
+        <span class="how-it-works__label">El proceso</span>
+        <h2 class="how-it-works__title">En 3 pasos, das una segunda vida</h2>
+        <p class="how-it-works__subtitle">Reutilizar es más fácil de lo que crees. Entra, explora y conecta con tu comunidad.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step__num">1</div>
+          <div class="step__icon-wrap">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <h3 class="step__title">Descubre</h3>
+          <p class="step__desc">Explora objetos disponibles de otros estudiantes de tu campus. Filtra por tipo, semestre o categoría.</p>
+        </div>
+
+        <div class="step__arrow" aria-hidden="true">
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="step">
+          <div class="step__num">2</div>
+          <div class="step__icon-wrap">
+            <i class="fa-regular fa-calendar-check"></i>
+          </div>
+          <h3 class="step__title">Reserva</h3>
+          <p class="step__desc">Aparta el objeto que te interesa. Solicita una donación, préstamo temporal o propón un intercambio.</p>
+        </div>
+
+        <div class="step__arrow" aria-hidden="true">
+          <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <div class="step">
+          <div class="step__num">3</div>
+          <div class="step__icon-wrap">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h3 class="step__title">Confirma</h3>
+          <p class="step__desc">Coordina el punto de encuentro en el campus: biblioteca, facultad o zona común. Rápido y seguro.</p>
+        </div>
+      </div>
+
+      <!-- Trust signals — consolidated here, no duplicate Security section -->
+      <div class="steps__trust">
+        <div class="steps__trust-item">
+          <div class="steps__trust-icon">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <div>
+            <strong>Solo estudiantes verificados</strong>
+            <span>El acceso es exclusivo con tu matrícula universitaria. Cada cuenta es validada institucionalmente.</span>
+          </div>
+        </div>
+        <div class="steps__trust-item">
+          <div class="steps__trust-icon">
+            <i class="fa-solid fa-location-dot"></i>
+          </div>
+          <div>
+            <strong>Puntos de encuentro seguros</strong>
+            <span>Coordina entregas en espacios verificados del campus: bibliotecas, salas comunes o laboratorios.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======================================================
+       3 SHARING MODES SECTION
+  ====================================================== -->
+  <section class="sharing-modes">
+    <div class="container">
+
+      <div class="sharing-modes__header">
+        <span class="sharing-modes__label">Modalidades</span>
+        <h2 class="sharing-modes__title">3 formas de compartir</h2>
+        <p class="sharing-modes__subtitle">Elige la que mejor se adapte a ti y a lo que quieres ofrecer.</p>
+      </div>
+
+      <div class="sharing-modes__grid">
+
+        <div class="mode-card mode-card--donacion">
+          <div class="mode-card__icon-wrap">
+            <i class="fa-solid fa-seedling"></i>
+          </div>
+          <div class="mode-card__body">
+            <h3 class="mode-card__title">Donación</h3>
+            <p class="mode-card__tagline">Da una segunda vida</p>
+            <p class="mode-card__desc">Publica objetos que ya no usas para que otros estudiantes puedan aprovecharlos. Gratis, permanente, sin condiciones.</p>
+          </div>
+        </div>
+
+        <div class="mode-card mode-card--prestamo">
+          <div class="mode-card__icon-wrap">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+          <div class="mode-card__body">
+            <h3 class="mode-card__title">Préstamo</h3>
+            <p class="mode-card__tagline">Úsalo por un tiempo</p>
+            <p class="mode-card__desc">Presta o solicita objetos por un periodo determinado. Ideal para materiales, herramientas o equipo que necesitas temporalmente.</p>
+          </div>
+        </div>
+
+        <div class="mode-card mode-card--intercambio">
+          <div class="mode-card__icon-wrap">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </div>
+          <div class="mode-card__body">
+            <h3 class="mode-card__title">Intercambio</h3>
+            <p class="mode-card__tagline">Cambia y multiplica</p>
+            <p class="mode-card__desc">Propón un intercambio con otro estudiante. Lo que ya no usas puede ser exactamente lo que alguien más necesita.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       CTA SECTION — Dark, bold close
+  ====================================================== -->
+  <section class="cta-section">
+    <div class="cta-section__inner">
+      <p class="cta-section__eyebrow">
+        <i class="fa-solid fa-leaf"></i>
+        Comunidad Renova FIE
+      </p>
+      <h2 class="cta-section__title">¿Listo para dar una segunda vida?</h2>
+      <p class="cta-section__subtitle">
+        Únete a Renova. Explora lo que otros estudiantes ya están compartiendo
+        o publica tu primer objeto hoy.
+      </p>
+      <div class="cta-section__actions">
+        <a href="login.html" class="btn-cta-primary" id="cta-explore">
+          Explorar objetos <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a href="login.html" class="btn-cta-outline" id="cta-publish">
+          Publicar un objeto
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       FOOTER — Enriched
+  ====================================================== -->
+  <footer class="footer-landing">
+    <div class="container">
+      <div class="footer-landing__grid">
+
+        <div>
+          <a href="index.html" class="footer-landing__brand">
+            <img src="assets/logos/renova-logo.svg" alt="Renova" class="footer-landing__logo-img" />
+          </a>
+          <p class="footer-landing__desc">
+            Renova es la plataforma universitaria de economía circular de la Facultad de Ingeniería Electromecánica.
+            Conectamos estudiantes para reutilizar componentes y materiales.
+          </p>
+        </div>
+
+        <div>
+          <p class="footer-landing__col-title">Plataforma</p>
+          <nav class="footer-landing__links">
+            <a href="login.html">Iniciar sesión</a>
+            <a href="login.html">Crear cuenta</a>
+            <a href="#explorar">Explorar objetos</a>
+            <a href="#como-funciona">Cómo funciona</a>
+          </nav>
+        </div>
+
+        <div>
+          <p class="footer-landing__col-title">Información</p>
+          <nav class="footer-landing__links">
+            <a href="about.html">Sobre nosotros</a>
+            <a href="stats.html">Estadísticas de impacto</a>
+            <a href="about.html">Equipo del proyecto</a>
+          </nav>
+        </div>
+
+      </div>
+
+      <div class="footer-landing__bottom">
+        <span>Renova &mdash; Facultad de Ingeniería Electromecánica (FIE) &mdash; &copy; 2024</span>
+        <span class="footer-landing__badge">
+          <i class="fa-solid fa-leaf"></i>
+          Proyecto académico — plataforma simulada
+        </span>
+      </div>
+    </div>
   </footer>
 
-  <script src="js/config.js"></script>
-  <script src="js/supabase.js"></script>
-  <script src="js/data.js"></script>
+  <!-- ======================================================
+       INLINE SCRIPT — Session awareness + scroll shadow + mobile menu
+  ====================================================== -->
+  <script>
+    (function () {
+      /* ---- Session check ---- */
+      var session = sessionStorage.getItem('eco_user');
+      if (session) {
+        try {
+          var user = JSON.parse(session);
+          document.getElementById('nav-login').classList.add('hidden');
+          document.getElementById('nav-register').classList.add('hidden');
+          document.getElementById('nav-username').textContent = user.nombre;
+          document.getElementById('nav-username').classList.remove('hidden');
+          document.getElementById('nav-forum').classList.remove('hidden');
+          document.getElementById('nav-logout').classList.remove('hidden');
+          // Redirect CTAs to forum
+          ['cta-explore','cta-publish','hero-search-btn','featured-see-all'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.href = 'forum.html';
+          });
+          document.getElementById('nav-mobile-cta').textContent = 'Ir al Foro';
+          document.getElementById('nav-mobile-cta').href = 'forum.html';
+          // Logout
+          document.getElementById('nav-logout').addEventListener('click', function(e) {
+            e.preventDefault();
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+          });
+        } catch(e) { /* corrupted session — ignore */ }
+      }
+
+      /* ---- Scroll shadow on navbar ---- */
+      var navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', function() {
+        navbar.classList.toggle('is-scrolled', window.scrollY > 10);
+      }, { passive: true });
+
+      /* ---- Mobile menu (max-height animation) ---- */
+      var hamburger = document.getElementById('nav-hamburger');
+      var icon      = document.getElementById('hamburger-icon');
+      var mobileMenu= document.getElementById('nav-mobile');
+      var isOpen    = false;
+
+      hamburger.addEventListener('click', function() {
+        isOpen = !isOpen;
+        mobileMenu.classList.toggle('is-open', isOpen);
+        hamburger.setAttribute('aria-expanded', isOpen.toString());
+        icon.className = isOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+      });
+
+      /* ---- Smooth anchor scrolling — close mobile menu on link click ---- */
+      mobileMenu.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+          if (isOpen) {
+            isOpen = false;
+            mobileMenu.classList.remove('is-open');
+            hamburger.setAttribute('aria-expanded', 'false');
+            icon.className = 'fa-solid fa-bars';
+          }
+        });
+      });
+
+      /* ---- Active nav link on scroll ---- */
+      var sections = document.querySelectorAll('section[id]');
+      var navLinks  = document.querySelectorAll('.navbar-landing__link');
+      function onScroll() {
+        var scrollPos = window.scrollY + 80;
+        sections.forEach(function(s) {
+          if (scrollPos >= s.offsetTop && scrollPos < s.offsetTop + s.offsetHeight) {
+            navLinks.forEach(function(l) { l.classList.remove('navbar-landing__link--active'); });
+            var match = document.querySelector('.navbar-landing__link[href="#' + s.id + '"]');
+            if (match) match.classList.add('navbar-landing__link--active');
+          }
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+    })();
+  </script>
+
 </body>
 </html>
