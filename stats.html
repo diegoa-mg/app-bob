@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoComponents FIE — Estadísticas de Impacto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* ── Page hero ── */
+    .stats-hero {
+      background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-secondary) 100%);
+      color: #fff;
+      text-align: center;
+      padding: var(--space-12) var(--space-4);
+    }
+    .stats-hero h1 { font-size: var(--font-size-3xl); margin: 0 0 var(--space-2); color: #ffffff; }
+    .stats-hero p  { font-size: var(--font-size-lg); opacity: .85; margin: 0; color: #ffffff; }
+
+    /* ── Section wrapper ── */
+    .stats-section {
+      padding: var(--space-10) var(--space-4);
+    }
+    .stats-section + .stats-section {
+      padding-top: 0;
+    }
+    .stats-section__title {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      margin: 0 0 var(--space-6);
+      text-align: center;
+    }
+
+    /* ── Counter cards ── */
+    .counter-card {
+      text-align: center;
+      padding: var(--space-6) var(--space-4);
+    }
+    .counter-card__value {
+      display: block;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      line-height: 1.1;
+    }
+    .counter-card__label {
+      display: block;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-weight: 600;
+    }
+    .counter-card--donacion  .counter-card__value { color: var(--color-accent-green); }
+    .counter-card--prestamo  .counter-card__value { color: var(--color-accent-blue); }
+    .counter-card--intercambio .counter-card__value { color: var(--color-accent); }
+
+    /* ── Formula cards ── */
+    .formula-card {
+      text-align: center;
+      padding: var(--space-6) var(--space-5);
+    }
+    .formula-card__icon { font-size: 2.5rem; line-height: 1; }
+    .formula-card__value {
+      display: block;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      margin: var(--space-2) 0 var(--space-1);
+    }
+    .formula-card__label {
+      font-size: var(--font-size-base);
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .formula-card__disclaimer {
+      display: block;
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: var(--space-2);
+      font-style: italic;
+    }
+
+    /* ── Bar chart ── */
+    .chart-section { background: var(--color-surface); }
+    .stat-bar-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+    .stat-bar-label {
+      width: 110px;
+      flex-shrink: 0;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .stat-bar-track {
+      flex: 1;
+      height: 28px;
+      background: var(--color-border);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+    .stat-bar {
+      height: 100%;
+      border-radius: var(--radius-full);
+      width: 0%;
+      transition: width 1s ease;
+    }
+    .stat-bar--donacion   { background: var(--color-accent-green); }
+    .stat-bar--prestamo   { background: var(--color-accent-blue); }
+    .stat-bar--intercambio { background: var(--color-accent); }
+    .stat-bar-pct {
+      width: 44px;
+      flex-shrink: 0;
+      font-size: var(--font-size-sm);
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-align: right;
+    }
+
+    /* ── Manzanillo context ── */
+    .manzanillo-section {
+      background: var(--color-primary-dark);
+      color: #fff;
+    }
+    .manzanillo-section .stats-section__title { color: #fff; }
+
+    /* Grid wrapper needs relative so the absolute card stays inside */
+    .manzanillo-section .grid {
+      position: relative;
+    }
+
+    .manzanillo-section .card {
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.15);
+      color: #fff;
+      cursor: pointer;
+      transition: box-shadow .25s ease, background .25s ease, border-color .25s ease;
+    }
+    .manzanillo-section .card__title { color: #fff; }
+    .manzanillo-section .card__description {
+      color: rgba(255,255,255,.78);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Expanded: float above the grid with absolute positioning so siblings don't move */
+    .manzanillo-section .card.expanded {
+      position: absolute;
+      top: 0;
+      width: calc(33.333% - 16px); /* matches 3-col grid gap */
+      z-index: 10;
+      box-shadow: 0 12px 36px rgba(0,0,0,.55);
+      background: rgba(30,70,30,.97);
+      border-color: rgba(255,255,255,.4);
+    }
+    .manzanillo-section .card.expanded .card__description {
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+
+    /* Placeholder: keep grid space while card is absolute */
+    .manzanillo-section .card-placeholder {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .manzanillo-highlight {
+      text-align: center;
+      font-size: var(--font-size-lg);
+      margin: var(--space-8) 0 0;
+      line-height: 1.7;
+      opacity: .9;
+    }
+    .manzanillo-highlight strong { color: #a5d6a7; }
+    .manzanillo-disclaimer {
+      text-align: center;
+      font-size: 11px;
+      opacity: .6;
+      margin-top: var(--space-2);
+      font-style: italic;
+    }
+
+    /* ── Motivational banner ── */
+    .motivacion-banner {
+      text-align: center;
+      padding: var(--space-10) var(--space-4);
+      background: var(--color-surface);
+    }
+    .motivacion-banner__icon { font-size: 3rem; line-height: 1; margin-bottom: var(--space-3); }
+    .motivacion-banner__msg {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar__inner">
+      <a href="index.html" class="navbar__brand">
+        <span class="navbar__logo">♻️</span>
+        <span>EcoComponents FIE</span>
+      </a>
+      <ul class="navbar__nav">
+        <li><a href="index.html"  class="navbar__link">Inicio</a></li>
+        <li><a href="forum.html"  class="navbar__link">Foro</a></li>
+        <li><a href="stats.html"  class="navbar__link navbar__link--active">Estadísticas</a></li>
+        <li><a href="about.html"  class="navbar__link">Sobre Nosotros</a></li>
+        <li><a href="login.html"  class="navbar__link navbar__logout" id="btn-logout">Cerrar Sesión</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main>
+
+    <!-- Hero -->
+    <section id="section-hero" class="stats-hero">
+      <h1>📊 Estadísticas de Impacto</h1>
+      <p>Conoce el impacto ambiental real que generamos juntos reutilizando componentes.</p>
+    </section>
+
+    <!-- Contadores -->
+    <section id="section-counters" class="stats-section">
+      <div class="container">
+        <h2 class="stats-section__title">Publicaciones Registradas</h2>
+        <div class="grid grid-4">
+          <div class="card counter-card">
+            <span class="counter-card__value" id="count-total">0</span>
+            <span class="counter-card__label">Total</span>
+          </div>
+          <div class="card counter-card counter-card--donacion">
+            <span class="counter-card__value" id="count-donaciones">0</span>
+            <span class="counter-card__label">Donaciones</span>
+          </div>
+          <div class="card counter-card counter-card--prestamo">
+            <span class="counter-card__value" id="count-prestamos">0</span>
+            <span class="counter-card__label">Préstamos</span>
+          </div>
+          <div class="card counter-card counter-card--intercambio">
+            <span class="counter-card__value" id="count-intercambios">0</span>
+            <span class="counter-card__label">Intercambios</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fórmulas CO₂ y Residuos -->
+    <section id="section-formulas" class="stats-section" style="padding-top:0">
+      <div class="container">
+        <h2 class="stats-section__title">Impacto Ambiental Estimado</h2>
+
+        <!-- Introducción y fuentes -->
+        <div class="formula-intro card" style="margin-bottom: var(--space-6); padding: var(--space-5) var(--space-6); text-align: left;">
+          <p style="margin: 0 0 var(--space-3); font-size: var(--font-size-base); color: var(--color-text);">
+            Las siguientes estimaciones cuantifican el beneficio ambiental generado por cada componente
+            electromecánico reutilizado en lugar de desechado. Los factores de emisión están basados en
+            literatura académica de ciclo de vida de productos electrónicos.
+          </p>
+          <ul style="margin: 0; padding-left: 1.4em; font-size: var(--font-size-sm); color: var(--color-text-muted); line-height: 1.8;">
+            <li>
+              <strong>CO₂ evitado (×&nbsp;0.5&nbsp;kg/componente):</strong> factor derivado del promedio de
+              emisiones de fabricación de componentes electromecánicos de pequeño formato, según
+              <em>Ecoinvent v3 — Electronics &amp; Electrical Equipment</em> y estudios de la
+              <em>European Environment Agency (EEA, 2022)</em>.
+            </li>
+            <li>
+              <strong>Residuos evitados (×&nbsp;0.3&nbsp;kg/componente):</strong> peso promedio estimado de un
+              componente electromecánico de laboratorio (motores DC pequeños, sensores, módulos de control),
+              basado en datos de la <em>EPA — Electronics Environmental Benefits Calculator (eBEAT, 2023)</em>.
+            </li>
+          </ul>
+          <p style="margin: var(--space-3) 0 0; font-size: 11px; color: var(--color-text-muted); font-style: italic;">
+            ⚠️ Estas cifras son estimaciones con fines educativos y de concientización. No representan mediciones exactas.
+          </p>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card formula-card">
+            <div class="formula-card__icon">🌱</div>
+            <span class="formula-card__value"><span id="val-co2">0</span> kg</span>
+            <div class="formula-card__label">CO₂ evitado</div>
+            <span class="formula-card__disclaimer">componentes × 0.5 kg · fuente: Ecoinvent v3 / EEA 2022</span>
+          </div>
+          <div class="card formula-card">
+            <div class="formula-card__icon">♻️</div>
+            <span class="formula-card__value"><span id="val-residuos">0</span> kg</span>
+            <div class="formula-card__label">Residuos evitados</div>
+            <span class="formula-card__disclaimer">componentes × 0.3 kg · fuente: EPA eBEAT 2023</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gráfica de distribución -->
+    <section id="section-chart" class="stats-section chart-section">
+      <div class="container">
+        <h2 class="stats-section__title">Distribución por Tipo de Publicación</h2>
+        <p style="text-align:center; font-size: var(--font-size-sm); color: var(--color-text-muted); margin: calc(-1 * var(--space-4)) 0 var(--space-6);">
+          Calculado en tiempo real a partir de las publicaciones activas en la plataforma.
+        </p>
+        <div class="stat-bar-row">
+          <span class="stat-bar-label">🟢 Donaciones</span>
+          <div class="stat-bar-track">
+            <div class="stat-bar stat-bar--donacion" id="bar-donaciones"></div>
+          </div>
+          <span class="stat-bar-pct" id="pct-donaciones">0%</span>
+        </div>
+        <div class="stat-bar-row">
+          <span class="stat-bar-label">🔵 Préstamos</span>
+          <div class="stat-bar-track">
+            <div class="stat-bar stat-bar--prestamo" id="bar-prestamos"></div>
+          </div>
+          <span class="stat-bar-pct" id="pct-prestamos">0%</span>
+        </div>
+        <div class="stat-bar-row">
+          <span class="stat-bar-label">🟠 Intercambios</span>
+          <div class="stat-bar-track">
+            <div class="stat-bar stat-bar--intercambio" id="bar-intercambios"></div>
+          </div>
+          <span class="stat-bar-pct" id="pct-intercambios">0%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contexto Manzanillo -->
+    <section id="section-manzanillo" class="stats-section manzanillo-section">
+      <div class="container">
+        <h2 class="stats-section__title">Manzanillo y la Ingeniería Sostenible</h2>
+        <div class="grid grid-3">
+
+          <div class="card" title="Haz clic para ver más">
+            <div class="card__body">
+              <h3 class="card__title">🚢 Puerto de Manzanillo</h3>
+              <p class="card__description">
+                Manzanillo es el puerto de contenedores más importante de México, punto de entrada y salida de
+                equipos industriales y componentes electrónicos. La gestión adecuada de estos materiales al final
+                de su vida útil es un reto creciente para la región. Su posición estratégica lo convierte en uno
+                de los principales focos de generación de residuos industriales en el Pacífico mexicano.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" title="Haz clic para ver más">
+            <div class="card__body">
+              <h3 class="card__title">⚡ Residuos Electromecánicos en Colima</h3>
+              <p class="card__description">
+                Estimaciones de la UCOL indican que los laboratorios de ingeniería generan entre 50 y 120 kg de
+                componentes en desuso por semestre. Sin un sistema de reutilización, la mayoría termina en
+                basura general, contribuyendo a la contaminación de suelos. Colima carece de infraestructura
+                formal de reciclaje de residuos electrónicos, lo que hace crítica la reutilización al interior
+                de las instituciones educativas.
+              </p>
+            </div>
+          </div>
+
+          <div class="card" title="Haz clic para ver más">
+            <div class="card__body">
+              <h3 class="card__title">🎓 El Rol de la FIE</h3>
+              <p class="card__description">
+                La Facultad de Ingeniería Electromecánica tiene la oportunidad de ser pionera en economía
+                circular dentro del campus. Cada componente reutilizado reduce la demanda de nuevos materiales
+                y prolonga la vida útil de recursos ya fabricados. Un marketplace interno genera además un
+                valor educativo directo: los estudiantes aprenden a valorar los recursos disponibles antes de
+                adquirir nuevos insumos.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <p class="manzanillo-highlight">
+          Hasta hoy, la comunidad FIE ha registrado
+          <strong><span id="manzanillo-total">0</span> componentes</strong>
+          disponibles para reutilización en este marketplace.
+        </p>
+        <p class="manzanillo-disclaimer">*Cifras y estimaciones con fines educativos. Datos calculados a partir de publicaciones activas en la plataforma.</p>
+      </div>
+    </section>
+
+    <!-- Mensaje motivacional -->
+    <section id="section-motivacion" class="motivacion-banner">
+      <div class="motivacion-banner__icon">🌿</div>
+      <p class="motivacion-banner__msg" id="msg-motivacion">Cargando…</p>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>Facultad de Ingeniería Electromecánica (FIE) &mdash; EcoComponents &copy; 2024</p>
+    <p>Promoviendo la reutilización de componentes y la conciencia ambiental.</p>
+  </footer>
+
+  <script src="js/data.js" defer></script>
+  <script src="js/stats.js" defer></script>
+  <script>
+    /**
+     * Manzanillo expandable cards.
+     * On click: the card becomes position:absolute (CSS) and floats above the grid.
+     * A hidden placeholder clone keeps the grid cell occupied so siblings don't move.
+     * Clicking again (or elsewhere) collapses it.
+     */
+    document.addEventListener('DOMContentLoaded', function () {
+      var manzSection = document.getElementById('section-manzanillo');
+      if (!manzSection) return;
+
+      var currentPlaceholder = null;
+      var currentCard = null;
+
+      function collapse() {
+        if (!currentCard) return;
+        currentCard.classList.remove('expanded');
+        currentCard.style.left = '';
+        if (currentPlaceholder) {
+          currentPlaceholder.parentNode.replaceChild(currentCard, currentPlaceholder);
+          currentPlaceholder = null;
+        }
+        currentCard = null;
+      }
+
+      manzSection.querySelectorAll('.card').forEach(function (card) {
+        card.addEventListener('click', function (e) {
+          e.stopPropagation();
+
+          /* Clicking the already-open card collapses it */
+          if (card === currentCard) {
+            collapse();
+            return;
+          }
+
+          /* Collapse any previously open card first */
+          collapse();
+
+          /* Record the card's left offset relative to the grid (its offsetParent) */
+          var leftOffset = card.offsetLeft;
+
+          /* Insert a same-size invisible placeholder where the card lives */
+          var ph = card.cloneNode(true);
+          ph.classList.add('card-placeholder');
+          ph.classList.remove('expanded');
+          card.parentNode.replaceChild(ph, card);
+          ph.parentNode.insertBefore(card, ph); /* card back before placeholder in DOM, absolute */
+
+          /* Position the floating card over its original cell */
+          card.style.left = leftOffset + 'px';
+          card.classList.add('expanded');
+
+          currentCard = card;
+          currentPlaceholder = ph;
+        });
+      });
+
+      /* Click outside collapses */
+      document.addEventListener('click', function () { collapse(); });
+    });
+  </script>
+</body>
+</html>
