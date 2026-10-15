@@ -1,0 +1,270 @@
+# Especificación de Requerimientos de Software (SRS)
+## EcoComponents FIE — v1.0
+
+**Proyecto:** EcoComponents FIE  
+**Institución:** Facultad de Ingeniería Electromecánica (FIE)  
+**Tipo:** Aplicación web estática simulada  
+**Versión del documento:** 1.0  
+**Clasificación:** Uso interno — estudiantes FIE  
+
+---
+
+## 1. Introducción
+
+### 1.1 Propósito
+Este documento describe los requerimientos funcionales y no funcionales de la aplicación web **EcoComponents FIE**, una plataforma de concientización ambiental que facilita la reutilización de componentes electromecánicos entre estudiantes de la Facultad de Ingeniería Electromecánica.
+
+### 1.2 Alcance del Sistema
+La aplicación permite a los estudiantes registrados publicar, buscar y solicitar componentes o piezas de proyectos anteriores mediante tres modalidades: **donación**, **préstamo** e **intercambio**. El sistema es exclusivamente de uso interno para la comunidad estudiantil de la FIE.
+
+### 1.3 Definiciones y Acrónimos
+
+| Término | Definición |
+|---|---|
+| FIE | Facultad de Ingeniería Electromecánica |
+| Publicación | Oferta de un componente ingresada por un estudiante |
+| Donación | El estudiante cede el componente sin retribución |
+| Préstamo | El estudiante presta el componente de forma temporal |
+| Intercambio | El estudiante ofrece el componente a cambio de otro |
+| Sesión simulada | Autenticación ficticia gestionada con `sessionStorage` |
+| JSON | Archivo de datos estáticos que simula la base de datos |
+
+### 1.4 Restricciones del Proyecto
+- **Sin backend real:** toda la lógica reside en el navegador (HTML, CSS, JS Vanilla).
+- **Sin persistencia real:** las publicaciones nuevas existen solo mientras dure la sesión del navegador.
+- **Sin registro de usuarios:** los usuarios están predefinidos en el archivo `data.json`.
+- **Sin subida de archivos:** las imágenes se referencian por URL.
+- **Usuarios:** exclusivamente estudiantes de la FIE (no docentes, no administrativos).
+
+---
+
+## 2. Descripción General del Sistema
+
+### 2.1 Perspectiva del Producto
+EcoComponents FIE es una plataforma tipo foro que opera completamente en el navegador. Simula las funcionalidades de una red de intercambio de componentes mediante datos precargados y lógica JavaScript en el cliente.
+
+### 2.2 Funciones Principales del Sistema
+
+```
+EcoComponents FIE
+├── Autenticación simulada
+├── Foro de publicaciones
+│   ├── Visualización de ofertas
+│   ├── Filtrado por tipo y semestre
+│   ├── Publicación de nuevas ofertas
+│   └── Contacto con el publicador
+├── Estadísticas de impacto ambiental
+├── Landing informativa
+└── Sección Sobre Nosotros
+```
+
+### 2.3 Usuarios del Sistema
+**Perfil único:** Estudiante de la FIE autenticado.
+
+| Atributo | Descripción |
+|---|---|
+| Rol | Estudiante activo de la FIE |
+| Acceso | Usuario y contraseña predefinidos en `data.json` |
+| Capacidades | Ver, filtrar, publicar y contactar en el foro |
+
+---
+
+## 3. Requerimientos Funcionales
+
+> **Formato:** `RF-[módulo]-[número]`  
+> **Prioridad:** Alta / Media / Baja
+
+---
+
+### Módulo A — Autenticación
+
+| ID | Descripción | Prioridad |
+|---|---|---|
+| RF-A-01 | El sistema debe mostrar una página de login con campos de usuario y contraseña. | Alta |
+| RF-A-02 | El sistema debe validar las credenciales ingresadas comparándolas contra los usuarios definidos en `data.json`. | Alta |
+| RF-A-03 | Si las credenciales son incorrectas, el sistema debe mostrar un mensaje de error visible sin recargar la página. | Alta |
+| RF-A-04 | Si las credenciales son correctas, el sistema debe guardar los datos del usuario en `sessionStorage` y redirigir al foro. | Alta |
+| RF-A-05 | Si el usuario ya tiene una sesión activa y accede a `login.html`, debe ser redirigido automáticamente al foro. | Media |
+| RF-A-06 | El sistema debe ofrecer una opción de "Cerrar sesión" que limpie `sessionStorage` y redirija a la landing. | Alta |
+| RF-A-07 | El acceso a `forum.html` debe estar restringido: si no hay sesión activa, redirigir a `login.html`. | Alta |
+
+---
+
+### Módulo B — Landing Page
+
+| ID | Descripción | Prioridad |
+|---|---|---|
+| RF-B-01 | La landing debe mostrar el nombre y slogan de la aplicación en un hero section destacado. | Alta |
+| RF-B-02 | La landing debe incluir una sección explicativa de los tres tipos de publicación (donación, préstamo, intercambio). | Alta |
+| RF-B-03 | La landing debe contener un botón de acción principal que dirija al usuario al login. | Alta |
+| RF-B-04 | Si el usuario ya tiene sesión activa, el botón de acción principal debe redirigir directamente al foro. | Media |
+| RF-B-05 | La landing debe contar con una barra de navegación con acceso a todas las secciones públicas. | Alta |
+| RF-B-06 | La landing debe contar con un footer con información de la institución. | Baja |
+
+---
+
+### Módulo C — Foro de Publicaciones
+
+| ID | Descripción | Prioridad |
+|---|---|---|
+| RF-C-01 | El foro debe cargar y mostrar todas las publicaciones precargadas en `data.json` al inicializarse. | Alta |
+| RF-C-02 | Cada publicación debe mostrarse como una tarjeta (card) con: imagen, título, descripción, tipo, estado del componente, semestre de origen y nombre del publicador. | Alta |
+| RF-C-03 | El foro debe ofrecer un filtro por tipo de publicación (donación / préstamo / intercambio). | Alta |
+| RF-C-04 | El foro debe ofrecer un filtro por semestre de origen del componente. | Alta |
+| RF-C-05 | Los filtros deben aplicarse de forma combinada (tipo Y semestre simultáneamente). | Media |
+| RF-C-06 | Debe existir una opción para limpiar los filtros y mostrar todas las publicaciones. | Media |
+| RF-C-07 | Cada tarjeta debe identificar visualmente el tipo de publicación mediante un badge de color diferenciado: verde para donación, azul para préstamo, naranja para intercambio. | Alta |
+| RF-C-08 | El foro debe incluir un botón "Publicar oferta" visible para el usuario autenticado. | Alta |
+| RF-C-09 | Al presionar "Publicar oferta", debe abrirse un formulario modal con los campos: título, descripción, tipo, URL de imagen, estado del componente y semestre de origen. | Alta |
+| RF-C-10 | Al enviar el formulario de nueva publicación, el sistema debe agregar la oferta al array en memoria y re-renderizar el foro sin recargar la página. | Alta |
+| RF-C-11 | La nueva publicación debe asignarse automáticamente al usuario de la sesión activa. | Alta |
+| RF-C-12 | Cada tarjeta debe incluir un botón "Contactar" que al presionarse muestre el nombre y dato de contacto del publicador (correo o número). | Alta |
+| RF-C-13 | Las publicaciones agregadas en sesión no persisten al recargar la página. Esto debe quedar documentado para el usuario. | Media |
+
+---
+
+### Módulo D — Estadísticas de Impacto
+
+| ID | Descripción | Prioridad |
+|---|---|---|
+| RF-D-01 | La sección de estadísticas debe mostrar el total de publicaciones activas (precargadas + en memoria). | Alta |
+| RF-D-02 | Debe mostrar el conteo desglosado por tipo: donaciones, préstamos e intercambios. | Alta |
+| RF-D-03 | Debe calcular y mostrar el CO₂ estimado evitado, usando la fórmula: `total_publicaciones × 0.5 kg`. | Media |
+| RF-D-04 | Debe calcular y mostrar los residuos electrónicos estimados evitados, usando la fórmula: `total_publicaciones × 0.3 kg`. | Media |
+| RF-D-05 | Las cifras de CO₂ y residuos deben estar etiquetadas como "estimaciones con fines educativos". | Alta |
+| RF-D-06 | Los contadores deben presentarse con una animación de incremento al cargar la vista. | Baja |
+| RF-D-07 | Debe mostrarse una visualización gráfica de la distribución por tipo (barras CSS, sin librerías externas). | Media |
+| RF-D-08 | Debe mostrarse un mensaje motivacional que varíe según el número total de publicaciones. | Baja |
+
+---
+
+### Módulo E — Sobre Nosotros
+
+| ID | Descripción | Prioridad |
+|---|---|---|
+| RF-E-01 | La sección debe incluir la misión del proyecto. | Alta |
+| RF-E-02 | La sección debe incluir la visión del proyecto. | Alta |
+| RF-E-03 | La sección debe incluir tarjetas informativas de los integrantes del equipo (nombre, rol, semestre). | Media |
+| RF-E-04 | La sección debe contextualizar por qué la FIE adoptó esta iniciativa. | Media |
+
+---
+
+### Módulo F — Navegación Global
+
+| ID | Descripción | Prioridad |
+|---|---|---|
+| RF-F-01 | Todas las páginas deben compartir la misma barra de navegación. | Alta |
+| RF-F-02 | La navbar debe mostrar el nombre del usuario autenticado cuando hay sesión activa. | Media |
+| RF-F-03 | El botón "Cerrar sesión" debe ser visible únicamente cuando hay sesión activa. | Alta |
+| RF-F-04 | El enlace al foro en la navbar debe redirigir a `login.html` si no hay sesión activa. | Alta |
+
+---
+
+## 4. Requerimientos No Funcionales
+
+### 4.1 Usabilidad
+
+| ID | Descripción |
+|---|---|
+| RNF-US-01 | La interfaz debe ser intuitiva: un estudiante sin experiencia previa debe poder publicar una oferta en menos de 3 pasos desde el foro. |
+| RNF-US-02 | Los mensajes de error deben ser claros y en español. |
+| RNF-US-03 | El contraste de colores debe seguir el estándar WCAG AA (mínimo 4.5:1 para texto normal). |
+| RNF-US-04 | Los badges de tipo de publicación deben ser legibles incluso sin considerar el color (incluir texto, no solo color). |
+
+### 4.2 Rendimiento
+
+| ID | Descripción |
+|---|---|
+| RNF-PE-01 | La aplicación debe cargar completamente en menos de 3 segundos en una conexión estándar de campus. |
+| RNF-PE-02 | Los filtros del foro deben aplicarse de forma instantánea (sin delay perceptible). |
+| RNF-PE-03 | No se deben cargar librerías externas de gran tamaño; el peso total de assets no debe superar 5 MB. |
+
+### 4.3 Compatibilidad
+
+| ID | Descripción |
+|---|---|
+| RNF-CO-01 | La aplicación debe funcionar correctamente en las versiones actuales de Chrome, Firefox y Edge. |
+| RNF-CO-02 | La aplicación debe ser responsiva y funcional en pantallas desde 320px de ancho (móviles) hasta 1920px (escritorio). |
+| RNF-CO-03 | No se deben usar APIs del navegador que requieran HTTPS para funcionar en un entorno local (file://). |
+
+### 4.4 Mantenibilidad
+
+| ID | Descripción |
+|---|---|
+| RNF-MA-01 | El código JavaScript debe estar organizado en módulos separados por responsabilidad (`auth.js`, `forum.js`, `stats.js`, `nav.js`, `data.js`). |
+| RNF-MA-02 | El archivo `data.json` debe ser el único punto de configuración de usuarios y datos precargados. |
+| RNF-MA-03 | Los estilos deben usar variables CSS (`--color-primary`, etc.) para facilitar cambios de paleta sin editar múltiples archivos. |
+| RNF-MA-04 | El proyecto debe incluir un `README.md` con instrucciones claras para abrir la aplicación y las credenciales de prueba. |
+
+### 4.5 Seguridad (Simulada)
+
+| ID | Descripción |
+|---|---|
+| RNF-SE-01 | Las contraseñas en `data.json` son texto plano con fines de simulación; el documento debe advertir que esto NO es una práctica para producción. |
+| RNF-SE-02 | Las rutas protegidas (`forum.html`) deben verificar la sesión al cargarse y redirigir si no existe. |
+
+### 4.6 Estética y Marca
+
+| ID | Descripción |
+|---|---|
+| RNF-AE-01 | La paleta de colores debe transmitir una identidad ecológica (tonos verdes predominantes). |
+| RNF-AE-02 | La tipografía debe ser legible y consistente en todas las vistas. |
+| RNF-AE-03 | El diseño visual debe ser coherente (mismos espaciados, bordes redondeados, jerarquía tipográfica) en las 5 páginas. |
+
+---
+
+## 5. Criterios de Aceptación por Módulo
+
+### Módulo A — Autenticación
+- ✅ El login rechaza credenciales incorrectas con mensaje visible.
+- ✅ El login redirige al foro con credenciales correctas de cualquier usuario del JSON.
+- ✅ Al cerrar sesión, no se puede acceder al foro sin volver a autenticarse.
+
+### Módulo C — Foro
+- ✅ Al cargar el foro, se muestran todas las publicaciones del JSON.
+- ✅ Al filtrar por "donación", solo aparecen publicaciones de tipo `donacion`.
+- ✅ Al combinar filtro tipo "préstamo" + semestre "4to", solo aparecen publicaciones que coincidan con ambos criterios.
+- ✅ Una nueva publicación creada aparece inmediatamente en el foro sin recargar la página.
+- ✅ El botón "Contactar" muestra el dato de contacto del publicador.
+
+### Módulo D — Estadísticas
+- ✅ Si hay 10 publicaciones, el CO₂ evitado muestra `5.0 kg`.
+- ✅ Si hay 10 publicaciones, los residuos muestran `3.0 kg`.
+- ✅ Al crear una nueva publicación en el foro y luego visitar estadísticas, los contadores reflejan el nuevo total.
+
+---
+
+## 6. Datos de Prueba Predefinidos
+
+### Usuarios del sistema (`data.json`)
+
+| ID | Nombre | Usuario | Contraseña | Semestre | Contacto |
+|---|---|---|---|---|---|
+| u001 | Juan Pérez | jperez | fiepas123 | 6to | jperez@fie.edu |
+| u002 | María López | mlopez | fiepas123 | 4to | mlopez@fie.edu |
+| u003 | Carlos Sánchez | csanchez | fiepas123 | 8vo | csanchez@fie.edu |
+
+### Publicaciones precargadas (mínimo requerido)
+- Al menos 10 publicaciones distribuidas: 4 donaciones, 3 préstamos, 3 intercambios.
+- Abarcar al menos 3 semestres distintos de origen.
+- Variedad de estados: nuevo, buen estado, desgaste leve, para repuesto.
+
+---
+
+## 7. Restricciones Técnicas Confirmadas
+
+| Restricción | Motivo |
+|---|---|
+| Sin frameworks JS (React, Vue, etc.) | Simplicidad y aprendizaje de JS vanilla |
+| Sin backend ni base de datos | Limitación del alcance del proyecto académico |
+| Sin `localStorage` para publicaciones | Las nuevas publicaciones son temporales por diseño |
+| Sin subida de imágenes | Se usan URLs externas por simplicidad |
+| Íconos opcionales vía CDN | Font Awesome o similar; única dependencia externa permitida |
+
+---
+
+## 8. Historial de Versiones
+
+| Versión | Fecha | Descripción |
+|---|---|---|
+| 1.0 | — | Versión inicial del documento de requerimientos |
