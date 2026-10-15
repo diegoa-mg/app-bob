@@ -69,7 +69,7 @@
 
     /* ── Contenido ── */
     .contenedor {
-      max-width: 760px;
+      max-width: 960px;
       margin: 2.5rem auto;
       padding: 0 1rem;
     }
@@ -81,14 +81,272 @@
       color: #1f2328;
     }
 
-    .foro-placeholder {
+    /* ── Filtros ── */
+    .filtros-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .filtros-bar select {
+      padding: .45rem .75rem;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: .875rem;
+      background: #fff;
+      color: #1f2328;
+      cursor: pointer;
+    }
+
+    .filtros-bar select:focus {
+      outline: none;
+      border-color: #2e7d32;
+    }
+
+    .btn-publicar {
+      margin-left: auto;
+      padding: .5rem 1.1rem;
+      background: #2e7d32;
+      color: #fff;
+      font-size: .875rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .btn-publicar:hover { background: #1b5e20; }
+
+    /* ── Grid de publicaciones ── */
+    .grid-publicaciones {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* ── Card ── */
+    .card-pub {
       background: #fff;
       border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 2rem;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-pub__imagen {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      background: #f2f7f2;
+    }
+
+    .card-pub__body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .card-pub__titulo {
+      font-size: .975rem;
+      font-weight: 700;
+      color: #1f2328;
+      margin: 0;
+    }
+
+    .card-pub__desc {
+      font-size: .85rem;
       color: #57606a;
+      line-height: 1.5;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-pub__meta {
+      font-size: .8rem;
+      color: #57606a;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .4rem;
+      margin-top: .25rem;
+    }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: .2rem .6rem;
+      border-radius: 20px;
+      font-size: .75rem;
+      font-weight: 600;
+    }
+
+    .badge--donacion   { background: #e8f5e9; color: #1b5e20; }
+    .badge--prestamo   { background: #eef0fb; color: #2d3dc2; }
+    .badge--intercambio{ background: #f3eefb; color: #6b2faf; }
+
+    /* ── Botón contactar ── */
+    .btn-contactar {
+      margin-top: auto;
+      padding: .45rem .9rem;
+      background: transparent;
+      border: 1px solid #2e7d32;
+      color: #2e7d32;
+      font-size: .825rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      align-self: flex-start;
+    }
+
+    .btn-contactar:hover { background: #2e7d32; color: #fff; }
+
+    .contacto-info {
+      display: none;
+      background: #f2f7f2;
+      border: 1px solid #d1e8d2;
+      border-radius: 6px;
+      padding: .6rem .85rem;
+      font-size: .82rem;
+      color: #1f2328;
+      margin-top: .4rem;
+    }
+
+    .contacto-info.visible { display: block; }
+
+    /* ── Estado vacío / cargando ── */
+    .foro-estado {
+      grid-column: 1 / -1;
       text-align: center;
+      padding: 3rem 1rem;
+      color: #57606a;
       font-size: .95rem;
+    }
+
+    /* ── Overlay y Modal ── */
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay.activo { display: flex; }
+
+    .modal {
+      background: #fff;
+      border-radius: 10px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .modal h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1f2328;
+      margin-bottom: 1.25rem;
+    }
+
+    .campo-modal {
+      margin-bottom: 1rem;
+    }
+
+    .campo-modal label {
+      display: block;
+      font-size: .83rem;
+      font-weight: 600;
+      color: #1f2328;
+      margin-bottom: .35rem;
+    }
+
+    .campo-modal input,
+    .campo-modal select,
+    .campo-modal textarea {
+      width: 100%;
+      padding: .55rem .8rem;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: .9rem;
+      color: #1f2328;
+      background: #f7f8fa;
+      font-family: inherit;
+    }
+
+    .campo-modal textarea { resize: vertical; min-height: 80px; }
+
+    .campo-modal input:focus,
+    .campo-modal select:focus,
+    .campo-modal textarea:focus {
+      outline: none;
+      border-color: #2e7d32;
+      background: #fff;
+    }
+
+    .modal-acciones {
+      display: flex;
+      gap: .75rem;
+      justify-content: flex-end;
+      margin-top: 1.25rem;
+    }
+
+    .btn-cancelar {
+      padding: .5rem 1rem;
+      background: transparent;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      font-size: .875rem;
+      cursor: pointer;
+      color: #57606a;
+    }
+
+    .btn-cancelar:hover { border-color: #999; color: #1f2328; }
+
+    .btn-enviar {
+      padding: .5rem 1.1rem;
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: .875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .btn-enviar:hover { background: #1b5e20; }
+    .btn-enviar:disabled { background: #81c784; cursor: not-allowed; }
+
+    .modal-error {
+      display: none;
+      background: #fff3f3;
+      border: 1px solid #f7a8a8;
+      color: #c0392b;
+      font-size: .83rem;
+      padding: .5rem .8rem;
+      border-radius: 6px;
+      margin-bottom: .75rem;
+    }
+
+    .modal-error.visible { display: block; }
+
+    @media (max-width: 480px) {
+      .filtros-bar { flex-direction: column; align-items: stretch; }
+      .btn-publicar { margin-left: 0; }
     }
   </style>
 </head>
@@ -107,14 +365,113 @@
   <!-- Contenido del foro -->
   <main class="contenedor">
     <p id="foro-bienvenida"></p>
-    <div class="foro-placeholder">
-      Aquí irán las publicaciones del foro.
+
+    <!-- Barra de filtros -->
+    <div class="filtros-bar">
+      <select id="filtro-tipo">
+        <option value="">Todos los tipos</option>
+        <option value="donacion">Donación</option>
+        <option value="prestamo">Préstamo</option>
+        <option value="intercambio">Intercambio</option>
+      </select>
+
+      <select id="filtro-semestre">
+        <option value="">Todos los semestres</option>
+        <option value="1ro">1ro</option>
+        <option value="2do">2do</option>
+        <option value="3ro">3ro</option>
+        <option value="4to">4to</option>
+        <option value="5to">5to</option>
+        <option value="6to">6to</option>
+        <option value="7mo">7mo</option>
+        <option value="8vo">8vo</option>
+        <option value="9no">9no</option>
+        <option value="10mo">10mo</option>
+      </select>
+
+      <button class="btn-publicar" id="btn-abrir-modal">+ Publicar oferta</button>
+    </div>
+
+    <!-- Grid de publicaciones -->
+    <div class="grid-publicaciones" id="grid-publicaciones">
+      <div class="foro-estado" id="foro-estado">Cargando publicaciones…</div>
     </div>
   </main>
 
-  <!-- auth.js primero, luego nav.js y forum.js -->
-  <script src="../js/auth.js"></script>
-  <script src="../js/nav.js"></script>
-  <script src="../js/forum.js"></script>
+  <!-- Modal: Nueva publicación -->
+  <div class="overlay" id="overlay-modal">
+    <div class="modal">
+      <h2>Nueva publicación</h2>
+
+      <div class="modal-error" id="modal-error"></div>
+
+      <form id="form-publicacion" novalidate>
+        <div class="campo-modal">
+          <label for="pub-titulo">Título *</label>
+          <input type="text" id="pub-titulo" placeholder="Ej: Motor DC 12V en buen estado" required />
+        </div>
+
+        <div class="campo-modal">
+          <label for="pub-descripcion">Descripción *</label>
+          <textarea id="pub-descripcion" placeholder="Describe el componente, su uso anterior y condición…" required></textarea>
+        </div>
+
+        <div class="campo-modal">
+          <label for="pub-tipo">Tipo *</label>
+          <select id="pub-tipo" required>
+            <option value="">— Selecciona —</option>
+            <option value="donacion">Donación</option>
+            <option value="prestamo">Préstamo</option>
+            <option value="intercambio">Intercambio</option>
+          </select>
+        </div>
+
+        <div class="campo-modal">
+          <label for="pub-estado">Estado del componente *</label>
+          <select id="pub-estado" required>
+            <option value="">— Selecciona —</option>
+            <option value="nuevo">Nuevo</option>
+            <option value="buen estado">Buen estado</option>
+            <option value="desgaste leve">Desgaste leve</option>
+            <option value="para repuesto">Para repuesto</option>
+          </select>
+        </div>
+
+        <div class="campo-modal">
+          <label for="pub-semestre">Semestre de origen *</label>
+          <select id="pub-semestre" required>
+            <option value="">— Selecciona —</option>
+            <option value="1ro">1ro</option>
+            <option value="2do">2do</option>
+            <option value="3ro">3ro</option>
+            <option value="4to">4to</option>
+            <option value="5to">5to</option>
+            <option value="6to">6to</option>
+            <option value="7mo">7mo</option>
+            <option value="8vo">8vo</option>
+            <option value="9no">9no</option>
+            <option value="10mo">10mo</option>
+          </select>
+        </div>
+
+        <div class="campo-modal">
+          <label for="pub-imagen">URL de imagen (opcional)</label>
+          <input type="url" id="pub-imagen" placeholder="https://ejemplo.com/foto.jpg" />
+        </div>
+
+        <div class="modal-acciones">
+          <button type="button" class="btn-cancelar" id="btn-cancelar-modal">Cancelar</button>
+          <button type="submit" class="btn-enviar" id="btn-enviar-pub">Publicar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/forum.js"></script>
 </body>
 </html>
