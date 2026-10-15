@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Foro — EcoComponentes FIE</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+      background: #f0f4f8;
+      color: #1f2328;
+      min-height: 100vh;
+    }
+
+    /* ── Navbar ── */
+    nav {
+      background: #1f2328;
+      color: #fff;
+      padding: .75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    nav .brand {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    nav .nav-derecha {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: .9rem;
+    }
+
+    #nav-usuario {
+      color: #b0c4de;
+      font-weight: 600;
+    }
+
+    #nav-login-link {
+      color: #b0c4de;
+      text-decoration: none;
+    }
+
+    #nav-login-link:hover { color: #fff; }
+
+    #btn-logout {
+      background: transparent;
+      border: 1px solid #57606a;
+      color: #b0c4de;
+      padding: .35rem .85rem;
+      border-radius: 5px;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+
+    #btn-logout:hover {
+      border-color: #aaa;
+      color: #fff;
+    }
+
+    /* ── Contenido ── */
+    .contenedor {
+      max-width: 760px;
+      margin: 2.5rem auto;
+      padding: 0 1rem;
+    }
+
+    #foro-bienvenida {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #1f2328;
+    }
+
+    .foro-placeholder {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 2rem;
+      color: #57606a;
+      text-align: center;
+      font-size: .95rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <a class="brand" href="#">EcoComponentes FIE</a>
+    <div class="nav-derecha">
+      <span id="nav-usuario"></span>
+      <a id="nav-login-link" href="login.html">Iniciar sesión</a>
+      <button id="btn-logout" style="display:none">Cerrar sesión</button>
+    </div>
+  </nav>
+
+  <!-- Contenido del foro -->
+  <main class="contenedor">
+    <p id="foro-bienvenida"></p>
+    <div class="foro-placeholder">
+      Aquí irán las publicaciones del foro.
+    </div>
+  </main>
+
+  <!-- auth.js primero, luego nav.js y forum.js -->
+  <script src="../js/auth.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/forum.js"></script>
+</body>
+</html>
