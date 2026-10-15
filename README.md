@@ -330,8 +330,3 @@ Navbar siempre visible:
 | `auth.js` | Comparación manual en array JS | Usa `supabase.auth.signInWithPassword()` |
 | Nueva sub-tarea | — | ST-0: Configuración de Supabase y esquema de BD |
 
-| Usuario | Contraseña | Semestre |
-|---|---|---|
-| jperez | fiepas123 | 6to |
-| mlopez | fiepas123 | 4to |
-| csanchez | fiepas123 | 8vo |
