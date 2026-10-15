@@ -177,7 +177,7 @@ Implementar el login y logout reales usando Supabase Auth. El usuario introduce 
 
 ### ST-4 — Foro de Publicaciones (forum.html + forum.js)
 
-**Status:** `[ ] pending`
+**Status:** `[x] done`
 
 **Intent:**
 Es el núcleo de la aplicación. Carga las publicaciones reales desde Supabase, permite filtrarlas, y permite crear nuevas publicaciones que se persisten en la base de datos.
@@ -368,14 +368,18 @@ Todas las páginas deben incluir los scripts en este orden antes de su módulo p
 <script src="js/[modulo-de-la-vista].js"></script>
 ```
 
+`js/data.js` carga usuarios y publicaciones desde Supabase al arrancar y los expone en `window.ecoData`. Dispara el evento `ecoDataReady` cuando los datos están listos.
+
 ## Cómo consumir los datos desde cualquier módulo JS
 
 ```js
 document.addEventListener('ecoDataReady', function () {
-  // window.ecoData.publicaciones — array con todas las publicaciones
-  // window.ecoData.usuarios      — array con todos los usuarios
+  // window.ecoData.publicaciones — array leído desde Supabase
+  // window.ecoData.usuarios      — array leído desde Supabase
+  // window.ecoData.addPublicacion(pub) — inserta en Supabase y agrega al array local
   console.log(window.ecoData.publicaciones);
 });
 ```
-=======
 
+> **Nota:** La carpeta `data/` y el archivo `data.json` han sido eliminados. Los datos residen en Supabase.
+> Las imágenes en `assets/images/` se conservan como **fallback** para publicaciones sin `imagen_url`.

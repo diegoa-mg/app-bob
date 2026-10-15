@@ -34,10 +34,22 @@
   }
 
   // ---------------------------------------------------------
-  // getPublicaciones — trae todas las publicaciones
+  // getPublicaciones — trae publicaciones con JOIN a perfiles
+  // Acepta objeto filtros opcional: { tipo, semestre_origen }
   // ---------------------------------------------------------
-  function getPublicaciones() {
-    return supaFetch('publicaciones?select=*&order=fecha.desc');
+  function getPublicaciones(filtros) {
+    var params = 'publicaciones?select=*,perfiles(nombre,contacto)&order=fecha_creacion.desc';
+
+    if (filtros) {
+      if (filtros.tipo) {
+        params += '&tipo=eq.' + encodeURIComponent(filtros.tipo);
+      }
+      if (filtros.semestre_origen) {
+        params += '&semestre_origen=eq.' + encodeURIComponent(filtros.semestre_origen);
+      }
+    }
+
+    return supaFetch(params);
   }
 
   // ---------------------------------------------------------
